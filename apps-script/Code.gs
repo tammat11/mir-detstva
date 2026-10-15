@@ -9,7 +9,7 @@
 const PAYMENTS = "Оплаты";
 const CHILDREN = "Дети";
 const FOLDER_NAME = "Квитанции — Мир детства";
-const P_HEAD = ["id", "Дата", "Месяц", "Ребёнок", "Родитель", "Телефон", "Сумма", "Комментарий", "Файл", "Статус"];
+const P_HEAD = ["id", "Дата", "Месяц", "Ребёнок", "Сумма", "Файл", "Статус", "id ребёнка"];
 const C_HEAD = ["id", "Ребёнок", "Родитель", "Телефон", "Группа", "Сумма в месяц"];
 const STATUSES = ["Новая", "Подтверждена", "Отклонена"];
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -26,7 +26,7 @@ function doPost(e) {
     checkKey(req.key);
     switch (req.action) {
       case "data": return json(data());
-      case "setStatus": return json(setStatus(req.id, req.status));
+      case "review": return json(review(req));
       case "saveChild": return json(saveChild(req.child || {}));
       case "deleteChild": return json(deleteRow(CHILDREN, req.id));
     }
@@ -39,23 +39,18 @@ function doPost(e) {
 // ---------- действия ----------
 
 function upload(r) {
-  if (!r.child || !r.parent || !r.phone || !r.month || !r.file || !r.file.data) throw new Error("Заполните все поля");
-  if (!/^\d{4}-\d{2}$/.test(r.month)) throw new Error("Неверный месяц");
-  const phone = digits(r.phone);
-  if (phone.length < 10) throw new Error("Проверьте телефон");
+  if (!r.file || !r.file.data) throw new Error("Приложите квитанцию");
+  const month = /^\d{4}-\d{2}$/.test(r.month) ? r.month : Utilities.formatDate(new Date(), "Asia/Almaty", "yyyy-MM");
   const ext = TYPES[r.file.type];
   if (!ext) throw new Error("Загрузите фото (JPG, PNG) или PDF");
   const bytes = Utilities.base64Decode(r.file.data);
   if (bytes.length > MAX_BYTES) throw new Error("Файл больше 8 МБ");
 
-  const name = (r.month + " " + text(r.child, 80) + " " + phone).replace(/[\\/:*?"<>|]/g, "") + ext;
+  const name = month + " " + Utilities.formatDate(new Date(), "Asia/Almaty", "dd.MM HH-mm-ss") + ext;
   const file = folder().createFile(Utilities.newBlob(bytes, r.file.type, name));
 
   withLock(function () {
-    sheet(PAYMENTS, P_HEAD).appendRow([
-      Utilities.getUuid(), new Date(), "'" + r.month, safe(r.child, 100), safe(r.parent, 100), "'" + phone,
-      Math.max(0, Math.round(Number(r.amount) || 0)) || "", safe(r.comment, 500), file.getUrl(), "Новая",
-    ]);
+    sheet(PAYMENTS, P_HEAD).appendRow([Utilities.getUuid(), new Date(), "'" + month, "", "", file.getUrl(), "Новая", ""]);
   });
   return { ok: true };
 }
@@ -64,8 +59,7 @@ function data() {
   const payments = rows(PAYMENTS, P_HEAD).map(function (r) {
     return {
       id: r[0], date: r[1] instanceof Date ? r[1].toISOString() : String(r[1]), month: String(r[2]),
-      child: String(r[3]), parent: String(r[4]), phone: String(r[5]), amount: Number(r[6]) || 0,
-      comment: String(r[7]), file: String(r[8]), status: String(r[9] || "Новая"),
+      amount: Number(r[4]) || 0, file: String(r[5]), status: String(r[6] || "Новая"), childId: String(r[7] || ""),
     };
   });
   const children = rows(CHILDREN, C_HEAD).map(function (r) {
@@ -74,12 +68,23 @@ function data() {
   return { ok: true, payments: payments, children: children };
 }
 
-function setStatus(id, status) {
-  if (STATUSES.indexOf(status) < 0) throw new Error("Неверный статус");
+// Садик отмечает, чей платёж, сумму и статус
+function review(r) {
+  if (STATUSES.indexOf(r.status) < 0) throw new Error("Неверный статус");
+  if (r.month && !/^\d{4}-\d{2}$/.test(r.month)) throw new Error("Неверный месяц");
   withLock(function () {
-    const sh = sheet(PAYMENTS, P_HEAD), row = findRow(sh, id);
+    const sh = sheet(PAYMENTS, P_HEAD), row = findRow(sh, r.id);
     if (!row) throw new Error("Квитанция не найдена");
-    sh.getRange(row, 10).setValue(status);
+    const cur = sh.getRange(row, 1, 1, P_HEAD.length).getValues()[0];
+    let childName = cur[3], childId = cur[7];
+    if (r.childId !== undefined) {
+      childId = String(r.childId || "");
+      const kid = rows(CHILDREN, C_HEAD).filter(function (k) { return k[0] === childId; })[0];
+      childName = kid ? safe(kid[1], 100) : "";
+    }
+    const month = r.month ? "'" + r.month : "'" + cur[2];
+    const amount = r.amount !== undefined ? Math.max(0, Math.round(Number(r.amount) || 0)) || "" : cur[4];
+    sh.getRange(row, 3, 1, 6).setValues([[month, childName, amount, cur[5], r.status, childId]]);
   });
   return { ok: true };
 }

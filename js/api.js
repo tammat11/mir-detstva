@@ -66,15 +66,18 @@
       const db = demo.load();
       if (action === "upload") {
         db.payments.push({
-          id: demo.uid(), date: new Date().toISOString(), month: p.month, child: p.child, parent: p.parent,
-          phone: util.digits(p.phone), amount: Number(p.amount) || 0, comment: p.comment || "",
+          id: demo.uid(), date: new Date().toISOString(), month: p.month || util.monthKey(), childId: "", amount: 0,
           file: "data:" + p.file.type + ";base64," + p.file.data, status: "Новая",
         });
         demo.save(db); return { ok: true };
       }
       if (!p.key) throw new Error("Введите пароль");
       if (action === "data") return { ok: true, payments: db.payments, children: db.children };
-      if (action === "setStatus") { const x = db.payments.find(r => r.id === p.id); if (x) x.status = p.status; demo.save(db); return { ok: true }; }
+      if (action === "review") {
+        const x = db.payments.find(r => r.id === p.id);
+        if (x) Object.assign(x, { status: p.status, childId: p.childId ?? x.childId, amount: Number(p.amount ?? x.amount) || 0, month: p.month || x.month });
+        demo.save(db); return { ok: true };
+      }
       if (action === "saveChild") {
         const c = p.child, i = db.children.findIndex(r => r.id === c.id);
         if (i >= 0) db.children[i] = c; else db.children.push({ ...c, id: demo.uid() });

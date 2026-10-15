@@ -26,21 +26,17 @@
 
   .card{background:#fff;border-radius:24px;padding:32px;box-shadow:0 14px 40px rgba(31,43,77,.08)}
   form{display:grid;gap:16px}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .money{position:relative}
-  .money input{padding-right:40px}
-  .money::after{content:"₸";position:absolute;right:14px;bottom:13px;color:var(--soft);font-weight:700}
 
-  .drop{position:relative;border:2px dashed #c9d7ee;border-radius:18px;background:var(--blue-bg);padding:26px 18px;text-align:center;transition:border-color .2s,background .2s;cursor:pointer}
+  .drop{position:relative;border:2px dashed #c9d7ee;border-radius:18px;background:var(--blue-bg);padding:56px 18px;text-align:center;transition:border-color .2s,background .2s;cursor:pointer}
   .drop:hover,.drop.over{border-color:var(--blue);background:#dfedfc}
   .drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
-  .drop svg{width:46px;height:46px;margin:0 auto 8px;display:block}
-  .drop b{display:block;color:var(--ink);font-size:17px}
+  .drop svg{width:64px;height:64px;margin:0 auto 8px;display:block}
+  .drop b{display:block;color:var(--ink);font-size:20px}
   .drop span{font-size:14px;color:var(--soft)}
-  .file{display:none;align-items:center;gap:14px;background:var(--blue-bg);border-radius:16px;padding:12px}
+  .file{display:none;flex-direction:column;align-items:center;gap:12px;background:var(--blue-bg);border-radius:18px;padding:18px;text-align:center}
   .file.on{display:flex}
-  .file .thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;background:#fff;display:grid;place-items:center;flex:none;font-weight:800;color:var(--pink);font-size:13px}
-  .file .meta{flex:1;min-width:0}
+  .file .thumb{width:auto;max-width:100%;height:auto;max-height:320px;min-width:120px;min-height:120px;border-radius:12px;object-fit:contain;background:#fff;display:grid;place-items:center;flex:none;font-weight:800;color:var(--pink);font-size:13px}
+  .file .meta{min-width:0;max-width:100%}
   .file .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .file .meta span{font-size:13px;color:var(--soft)}
   .file button{background:none;border:0;color:var(--soft);font-size:14px;text-decoration:underline}
@@ -55,11 +51,9 @@
   @keyframes draw{to{stroke-dashoffset:0}}
   .done h2{font-size:28px;font-weight:800;margin-bottom:8px}
   .done p{color:var(--soft);margin-bottom:22px}
-  .done .sum{display:inline-block;background:var(--pink-bg);border-radius:14px;padding:12px 18px;margin-bottom:22px;text-align:left;font-size:15px}
 
-  @media(max-width:860px){.layout{grid-template-columns:1fr;gap:24px}.card{padding:22px}}
-  @media(max-width:520px){.row{grid-template-columns:1fr}}
-</style>
+  @media(max-width:860px){.layout{grid-template-columns:1fr;gap:24px}.card{padding:22px}.intro .steps,.intro>p:not(.help){display:none}.intro h1{margin-bottom:0}}
+  </style>
 </head>
 <body>
 <div id="demo" class="demo" hidden><b>Демо-режим.</b> Квитанции сохраняются только в этом браузере. После подключения Google Таблицы они будут приходить в садик.</div>
@@ -76,30 +70,20 @@
     <section class="intro">
       <span class="kicker">для родителей</span>
       <h1>Оплатили садик? <span>Загрузите квитанцию</span></h1>
-      <p>Так мы быстрее увидим оплату и не будем лишний раз вас беспокоить.</p>
+      <p>Ничего заполнять не нужно — просто приложите квитанцию.</p>
       <ol class="steps">
         <li>Оплатите садик удобным способом</li>
         <li>Сделайте фото или скриншот квитанции</li>
-        <li>Загрузите её здесь — мы проверим и подтвердим</li>
+        <li>Загрузите её здесь — и всё, мы сами отметим оплату</li>
       </ol>
       <p class="help">Вопросы по оплате? <a href="https://wa.me/77772829292" target="_blank" rel="noopener">Напишите в WhatsApp</a></p>
     </section>
 
     <section class="card">
       <form id="form" novalidate>
-        <div class="row">
-          <label>Имя и фамилия ребёнка<input name="child" autocomplete="off" required></label>
-          <label>Ваше имя<input name="parent" autocomplete="name" required></label>
-        </div>
-        <div class="row">
-          <label>Ваш телефон<input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="8 7__ ___ __ __" required></label>
-          <label>За какой месяц<select name="month" id="month"></select></label>
-        </div>
-        <label class="money">Сумма оплаты<input name="amount" type="number" inputmode="numeric" min="0" step="1" placeholder="например, 150000"></label>
 
         <div>
-          <label for="fileInput" style="margin-bottom:6px">Квитанция</label>
-          <div class="drop" id="drop">
+                    <div class="drop" id="drop">
             <input type="file" id="fileInput" accept="image/*,application/pdf">
             <svg viewBox="0 0 48 48" fill="none" stroke="#2d7fd3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 34H12a8 8 0 0 1-1-15.9A11 11 0 0 1 32.5 15 8.5 8.5 0 0 1 36 34h-2"/><path d="M24 40V24M18 29l6-6 6 6" stroke="#e23a7a"/></svg>
             <b>Выберите фото или PDF</b>
@@ -111,17 +95,15 @@
             <button type="button" id="fclear">Заменить</button>
           </div>
         </div>
-
-        <label><span>Комментарий <span style="font-weight:400">(необязательно)</span></span><textarea name="comment" rows="2" placeholder="например, оплата за двоих детей"></textarea></label>
         <p class="err" id="err" role="alert"></p>
-        <button class="btn btn-pink submit" id="submit" type="submit">Отправить квитанцию</button>
+        <button class="btn btn-pink submit" id="submit" type="submit" hidden>Отправить квитанцию</button>
       </form>
 
       <div class="done" id="done">
         <svg viewBox="0 0 100 100" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><circle cx="50" cy="50" r="44" stroke="#22a06b"/><path d="M31 51l13 13 26-27" stroke="#22a06b"/></svg>
         <h2>Квитанция отправлена!</h2>
         <p>Спасибо! Мы проверим оплату и отметим её.</p>
-        <div class="sum" id="sum"></div><br>
+
         <button class="btn btn-ghost" id="again" type="button">Загрузить ещё одну</button>
       </div>
     </section>
@@ -138,17 +120,6 @@
   const form = $("form");
   if (MD.isDemo()) $("demo").hidden = false;
 
-  // месяцы: прошлый, текущий, следующий
-  const now = util.monthKey();
-  [-1, 0, 1].forEach(n => {
-    const k = util.shiftMonth(now, n), o = new Option(util.monthName(k), k);
-    if (n === 0) o.selected = true;
-    $("month").add(o);
-  });
-
-  // запоминаем данные родителя на этом устройстве
-  const saved = util.store.get("md_parent");
-  if (saved) ["child", "parent", "phone", "amount"].forEach(k => { if (saved[k]) form[k].value = saved[k]; });
 
   let prepared = null;
   async function pick(file) {
@@ -164,10 +135,11 @@
       const t = $("thumb");
       if (prepared.preview) t.outerHTML = `<img class="thumb" id="thumb" src="${prepared.preview}" alt="">`;
       else t.textContent = "PDF";
+      $("submit").hidden = false;
     } catch (e) { clearFile(); $("err").textContent = e.message; }
   }
   function clearFile() {
-    prepared = null; $("fileInput").value = "";
+    prepared = null; $("fileInput").value = ""; $("submit").hidden = true;
     $("file").classList.remove("on"); $("drop").style.display = "";
     $("thumb").outerHTML = '<div class="thumb" id="thumb">PDF</div>';
   }
@@ -179,24 +151,13 @@
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
-    const f = Object.fromEntries(new FormData(form));
-    const errs = [];
-    if (!f.child.trim()) errs.push("имя ребёнка");
-    if (!f.parent.trim()) errs.push("ваше имя");
-    if (util.digits(f.phone).length < 10) errs.push("телефон");
-    if (!prepared) errs.push("квитанцию");
-    if (errs.length) { $("err").textContent = "Заполните: " + errs.join(", "); return; }
+    if (!prepared) { $("err").textContent = "Выберите фото или файл квитанции"; return; }
 
     const btn = $("submit");
     btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Отправляем…';
     $("err").textContent = "";
     try {
-      await MD.call("upload", {
-        child: f.child.trim(), parent: f.parent.trim(), phone: f.phone, month: f.month,
-        amount: f.amount, comment: f.comment.trim(), file: { name: prepared.name, type: prepared.type, data: prepared.data },
-      });
-      util.store.set("md_parent", { child: f.child.trim(), parent: f.parent.trim(), phone: f.phone, amount: f.amount });
-      $("sum").innerHTML = `<b>${util.esc(f.child)}</b><br>${util.esc(util.monthName(f.month))}${f.amount ? " · " + util.esc(util.money(f.amount)) : ""}`;
+      await MD.call("upload", { month: util.monthKey(), file: { name: prepared.name, type: prepared.type, data: prepared.data } });
       form.style.display = "none"; $("done").classList.add("on");
     } catch (err) {
       $("err").textContent = err.message;
@@ -206,7 +167,7 @@
   });
 
   $("again").addEventListener("click", () => {
-    clearFile(); form.comment.value = "";
+    clearFile();
     $("done").classList.remove("on"); form.style.display = "";
   });
 </script>

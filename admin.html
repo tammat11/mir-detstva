@@ -96,8 +96,12 @@
   .modal .head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);gap:10px}
   .modal .body{overflow:auto;background:#f3f4f8;display:grid;place-items:center;min-height:200px}
   .modal .body img{max-width:100%;display:block}
-  .modal .body iframe{width:100%;height:70vh;border:0}
-  .modal .foot{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .modal .body iframe{width:100%;height:55vh;border:0}
+  .modal .body img{max-height:55vh;object-fit:contain}
+  .modal .foot{display:grid;gap:12px;padding:14px 18px;border-top:1px solid var(--line)}
+  .review{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+  .review input,.review select{padding:10px 12px}
+  @media(max-width:600px){.review{grid-template-columns:1fr 1fr}.review label:first-child{grid-column:1/-1}}
   .x{border:0;background:var(--blue-bg);width:36px;height:36px;border-radius:10px;font-size:18px}
 </style>
 </head>
@@ -208,13 +212,8 @@
 
   // ---------- расчёты ----------
   // Квитанцию привязываем к ребёнку по телефону родителя, а если не совпал — по имени ребёнка.
-  function matchChild(p) {
-    const ph = util.digits(p.phone), nm = util.norm(p.child);
-    const byPhone = state.children.filter(c => ph && util.digits(c.phone) === ph);
-    if (byPhone.length === 1) return byPhone[0];
-    // у родителя несколько детей — уточняем по имени
-    return byPhone.find(c => util.norm(c.name) === nm) || state.children.find(c => util.norm(c.name) === nm) || byPhone[0] || null;
-  }
+  // садик сам выбирает ребёнка при проверке квитанции
+  function matchChild(p) { return p.childId ? state.children.find(c => c.id === p.childId) || null : null; }
   function compute() {
     const g = $("group").value;
     const kids = state.children.filter(c => !g || c.group === g);
@@ -303,16 +302,16 @@
         : `<div class="empty"><b>Пока никто не оплатил</b>Подтверждённые квитанции появятся здесь.</div>`;
       return;
     }
-    const list = (tab === "check" ? check : pays).filter(p => hit(p.child, p.parent, p.phone)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const list = (tab === "check" ? check : pays).filter(p => { const c = matchChild(p); return !q || (c && hit(c.name, c.parent, c.phone)); }).sort((a, b) => String(b.date).localeCompare(String(a.date)));
     v.innerHTML = list.length ? table(["", "Ребёнок", "Сумма", "Загружена", "Статус", ""], list.map(p => {
       const c = matchChild(p);
       return `<tr>
         <td><button class="thumbs" data-open="${esc(p.id)}">${isImg(p.file) ? `<img class="thumbs" src="${esc(p.file)}" alt="">` : "ФАЙЛ"}</button></td>
-        <td><b>${esc(p.child)}</b><span class="sub">${esc(p.parent)} · ${esc(fmtPhone(p.phone))}${c ? "" : ' · <span style="color:var(--bad)">нет в списке детей</span>'}</span>${p.comment ? `<span class="sub">💬 ${esc(p.comment)}</span>` : ""}</td>
+        <td>${c ? `<b>${esc(c.name)}</b><span class="sub">${esc(c.group || "")}</span>` : '<span style="color:var(--soft)">Ребёнок не выбран</span>'}</td>
         <td>${esc(p.amount ? util.money(p.amount) : "—")}</td>
         <td>${esc(util.date(p.date))}</td>
         <td>${pill(p.status)}</td>
-        <td class="r"><div class="acts">${p.status !== "Подтверждена" ? `<button class="btn btn-blue btn-sm" data-st="Подтверждена" data-id="${esc(p.id)}">Подтвердить</button>` : ""}${p.status !== "Отклонена" ? `<button class="btn btn-ghost btn-sm" data-st="Отклонена" data-id="${esc(p.id)}">Отклонить</button>` : ""}</div></td></tr>`;
+        <td class="r"><div class="acts"><button class="btn ${p.status === "Новая" ? "btn-blue" : "btn-ghost"} btn-sm" data-open="${esc(p.id)}">${p.status === "Новая" ? "Проверить" : "Открыть"}</button></div></td></tr>`;
     })) : `<div class="empty"><b>${tab === "check" ? "Нет новых квитанций" : "Квитанций пока нет"}</b>${tab === "check" ? "Всё проверено." : "Отправьте родителям ссылку на страницу оплаты."}</div>`;
   }
   function paidInGroup(name) {
@@ -361,8 +360,9 @@
   // ---------- просмотр квитанции ----------
   function openReceipt(id) {
     const p = state.payments.find(x => x.id === id); if (!p) return;
-    $("mTitle").textContent = p.child;
-    $("mSub").textContent = `${p.parent} · ${util.monthName(p.month)} · ${p.amount ? util.money(p.amount) : "сумма не указана"}`;
+    const c = matchChild(p);
+    $("mTitle").textContent = c ? c.name : "Новая квитанция";
+    $("mSub").textContent = "Загружена " + util.date(p.date) + " · " + (p.status === "Новая" ? "ждёт проверки" : p.status.toLowerCase());
     const body = $("mBody"); body.innerHTML = "";
     if (/^data:image\//.test(p.file)) { const img = new Image(); img.src = p.file; body.append(img); }
     else if (/^data:application\/pdf/.test(p.file)) {
@@ -375,8 +375,19 @@
       const a = document.createElement("a"); a.href = p.file; a.target = "_blank"; a.rel = "noopener"; a.className = "btn btn-ghost btn-sm"; a.textContent = "Открыть в Google Диске"; a.style.margin = "12px";
       body.append(a);
     } else body.innerHTML = '<p class="empty">Файл недоступен</p>';
-    $("mFoot").innerHTML = (p.status !== "Подтверждена" ? `<button class="btn btn-blue" data-st="Подтверждена" data-id="${esc(p.id)}">Подтвердить оплату</button>` : "") +
-                           (p.status !== "Отклонена" ? `<button class="btn btn-ghost" data-st="Отклонена" data-id="${esc(p.id)}">Отклонить</button>` : "");
+    const kids = [...state.children].sort((a, b) => String(a.group).localeCompare(String(b.group)) || String(a.name).localeCompare(String(b.name)));
+    const months = [-2, -1, 0, 1].map(n => util.shiftMonth(p.month, n));
+    $("mFoot").innerHTML = `<div class="review">
+        <label>Чей платёж<select id="rKid"><option value="">— выберите ребёнка —</option>${kids.map(k => `<option value="${esc(k.id)}"${k.id === p.childId ? " selected" : ""}>${esc(k.name)}${k.group ? " · " + esc(k.group) : ""}</option>`).join("")}</select></label>
+        <label>Сумма, ₸<input id="rSum" type="number" min="0" inputmode="numeric" value="${esc(p.amount || "")}"></label>
+        <label>За месяц<select id="rMonth">${months.map(m => `<option value="${m}"${m === p.month ? " selected" : ""}>${esc(util.monthName(m))}</option>`).join("")}</select></label>
+      </div>
+      <div class="acts">
+        ${p.status !== "Отклонена" ? `<button class="btn btn-ghost" data-st="Отклонена" data-id="${esc(p.id)}">Отклонить</button>` : ""}
+        <button class="btn btn-blue" data-st="Подтверждена" data-id="${esc(p.id)}">${p.status === "Подтверждена" ? "Сохранить" : "Подтвердить оплату"}</button>
+      </div>`;
+    if (!kids.length) $("rKid").insertAdjacentHTML("afterend", '<span class="sub" style="font-size:13px">Сначала добавьте детей во вкладке «Список детей»</span>');
+    $("rKid").addEventListener("change", () => { const k = state.children.find(x => x.id === $("rKid").value); if (k && k.fee && !$("rSum").value) $("rSum").value = k.fee; });
     $("modal").classList.add("on");
   }
   const closeModal = () => $("modal").classList.remove("on");
@@ -391,7 +402,13 @@
     if (b.dataset.open) { openReceipt(b.dataset.open); return; }
     if (b.dataset.st) {
       b.disabled = true;
-      try { await MD.call("setStatus", { key: KEY, id: b.dataset.id, status: b.dataset.st }); closeModal(); await refresh(); toast(b.dataset.st === "Подтверждена" ? "Оплата подтверждена" : "Квитанция отклонена"); }
+      const req = { key: KEY, id: b.dataset.id, status: b.dataset.st };
+      if ($("modal").classList.contains("on") && $("rKid")) {
+        req.childId = $("rKid").value; req.amount = Number($("rSum").value) || 0; req.month = $("rMonth").value;
+        if (b.dataset.st === "Подтверждена" && !req.childId) { toast("Выберите, чей это платёж", true); b.disabled = false; return; }
+        if (b.dataset.st === "Подтверждена" && !req.amount) { toast("Укажите сумму из квитанции", true); b.disabled = false; return; }
+      }
+      try { await MD.call("review", req); closeModal(); await refresh(); toast(b.dataset.st === "Подтверждена" ? "Оплата подтверждена" : "Квитанция отклонена"); }
       catch (err) { toast(err.message, true); b.disabled = false; }
       return;
     }
