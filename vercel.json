@@ -5,11 +5,11 @@
   "functions": {
     "api/app.js": {
       "maxDuration": 60,
-      "includeFiles": "{lib/tessdata/**,node_modules/**}"
+      "includeFiles": "{lib/**,node_modules/**}"
     },
     "api/tg.js": {
       "maxDuration": 60,
-      "includeFiles": "{lib/tessdata/**,node_modules/**}"
+      "includeFiles": "{lib/**,node_modules/**}"
     },
     "api/setup.js": {
       "maxDuration": 30
