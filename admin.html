@@ -409,6 +409,11 @@
       const bin = atob(p.file.split(",")[1]), arr = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
       const fr = document.createElement("iframe"); fr.src = URL.createObjectURL(new Blob([arr], { type: "application/pdf" })); body.append(fr);
+    } else if (/^https:\/\/drive\.google\.com\//.test(p.file)) { // версия на Google Apps Script
+      const m = p.file.match(/\/d\/([\w-]+)/);
+      if (m) { const fr = document.createElement("iframe"); fr.src = `https://drive.google.com/file/d/${m[1]}/preview`; body.append(fr); }
+      const a = document.createElement("a"); a.href = p.file; a.target = "_blank"; a.rel = "noopener"; a.className = "btn btn-ghost btn-sm"; a.textContent = "Открыть в Google Диске"; a.style.margin = "12px";
+      body.append(a);
     } else if (/^blob:/.test(p.file)) { // приватный файл с сервера — загружаем по паролю
       body.innerHTML = '<p class="empty">Загружаем квитанцию…</p>';
       MD.fetchFile(KEY, p.id).then(b => {
