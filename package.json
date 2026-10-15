@@ -4,6 +4,8 @@
   "type": "module",
   "engines": { "node": ">=20" },
   "dependencies": {
-    "@vercel/blob": "2.8.2"
+    "@vercel/blob": "2.8.2",
+    "pdfjs-dist": "4.10.38",
+    "tesseract.js": "5.1.1"
   }
 }

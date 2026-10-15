@@ -112,7 +112,7 @@
       <div class="done" id="done">
         <svg viewBox="0 0 100 100" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><circle cx="50" cy="50" r="44" stroke="#22a06b"/><path d="M31 51l13 13 26-27" stroke="#22a06b"/></svg>
         <h2>Квитанция отправлена!</h2>
-        <p>Спасибо! Мы проверим оплату и отметим её.</p>
+        <p id="doneNote">Спасибо! Мы проверим оплату и отметим её.</p>
 
         <button class="btn btn-ghost" id="again" type="button">Загрузить ещё одну</button>
       </div>
@@ -166,7 +166,9 @@
     btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Отправляем…';
     $("err").textContent = "";
     try {
-      await MD.call("upload", { month: util.monthKey(), file: { name: prepared.name, type: prepared.type, data: prepared.data } });
+      const r = await MD.call("upload", { month: util.monthKey(), file: { name: prepared.name, type: prepared.type, data: prepared.data } });
+      $("doneNote").textContent = r.duplicate ? "⚠️ Эту квитанцию уже отправляли раньше. Если это другая оплата — загрузите её квитанцию."
+        : r.amount ? `Сумма в квитанции: ${util.money(r.amount)}. Мы проверим оплату и отметим её.` : "Спасибо! Мы проверим оплату и отметим её.";
       form.style.display = "none"; $("done").classList.add("on");
     } catch (err) {
       $("err").textContent = err.message;

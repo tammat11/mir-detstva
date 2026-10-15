@@ -106,6 +106,7 @@
   .review{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
   .review input,.review select{padding:10px 12px}
   @media(max-width:600px){.review{grid-template-columns:1fr 1fr}.review label:first-child{grid-column:1/-1}}
+  .modal .head .sub{display:block;font-size:13px;color:var(--soft);margin-top:2px}
   .x{border:0;background:var(--blue-bg);width:36px;height:36px;border-radius:10px;font-size:18px}
 </style>
 </head>
@@ -314,7 +315,7 @@
       const c = matchChild(p);
       return `<tr>
         <td><button class="thumbs" data-open="${esc(p.id)}">${isImg(p.file) ? `<img class="thumbs" src="${esc(p.file)}" alt="">` : "ФАЙЛ"}</button></td>
-        <td>${c ? `<b>${esc(c.name)}</b>` : '<span style="color:var(--soft)">Ребёнок не выбран</span>'}${p.chat ? '<span class="src">Telegram</span>' : ""}${c && c.group ? `<span class="sub">${esc(c.group)}</span>` : ""}</td>
+        <td>${c ? `<b>${esc(c.name)}</b>` : '<span style="color:var(--soft)">Ребёнок не выбран</span>'}${p.chat ? '<span class="src">Telegram</span>' : ""}${c && c.group ? `<span class="sub">${esc(c.group)}</span>` : ""}${warn(p)}</td>
         <td>${esc(p.amount ? util.money(p.amount) : "—")}</td>
         <td>${esc(util.date(p.date))}</td>
         <td>${pill(p.status)}</td>
@@ -373,6 +374,11 @@
   }
 
   const table = (head, rows) => `<table><thead><tr>${head.map((h, i) => `<th${i === head.length - 1 ? ' class="r"' : ""}>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
+  // что распознано в квитанции + предупреждения
+  const warn = p => (p.ocrText ? `<span class="sub">🔎 ${esc(p.ocrText)}</span>` : "") +
+    (p.duplicate ? '<span class="sub" style="color:var(--bad);font-weight:700">⚠️ Квитанция уже была</span>' : "") +
+    (p.wrongReceiver ? '<span class="sub" style="color:var(--bad);font-weight:700">⚠️ Другой получатель</span>' : "") +
+    (p.ocr && p.ocr.success === false ? '<span class="sub" style="color:var(--bad);font-weight:700">⚠️ Перевод не прошёл</span>' : "");
   const pill = s => s === "Подтверждена" ? '<span class="pill ok">Подтверждена</span>' : s === "Отклонена" ? '<span class="pill bad">Отклонена</span>' : '<span class="pill new">Новая</span>';
   const isImg = f => /^data:image\//.test(f || "") ;
   function fmtPhone(p) { const d = util.digits(p); return d.length === 10 ? `8 ${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}` : (p || ""); }
@@ -388,6 +394,7 @@
     const c = matchChild(p);
     $("mTitle").textContent = c ? c.name : "Новая квитанция";
     $("mSub").textContent = "Загружена " + util.date(p.date) + " · " + (p.status === "Новая" ? "ждёт проверки" : p.status.toLowerCase());
+    $("mSub").insertAdjacentHTML("beforeend", warn(p) + (p.ocr && p.ocr.receiptNo ? `<span class="sub">№ ${esc(p.ocr.receiptNo)}</span>` : ""));
     const body = $("mBody"); body.innerHTML = "";
     if (/^data:image\//.test(p.file)) { const img = new Image(); img.src = p.file; body.append(img); }
     else if (/^data:application\/pdf/.test(p.file)) {
