@@ -208,7 +208,15 @@
     finally { $("loginBtn").disabled = false; }
   });
   $("logout").addEventListener("click", () => { sessionStorage.removeItem("md_key"); location.reload(); });
-  function showApp() { $("login").hidden = true; $("app").hidden = false; $("logout").hidden = false; render(); }
+  function showApp() {
+    $("login").hidden = true; $("app").hidden = false; $("logout").hidden = false;
+    // есть непроверенные квитанции — сразу открываем их
+    if (state.payments.some(p => p.status === "Новая")) {
+      tab = "check";
+      document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x.dataset.t === "check"));
+    }
+    render();
+  }
   if (KEY) load().then(showApp).catch(() => sessionStorage.removeItem("md_key"));
 
   async function refresh() {
