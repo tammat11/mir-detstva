@@ -105,6 +105,7 @@
   .tile{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:18px;background:var(--pink-bg)}
   .tile:nth-child(4n+2),.tile:nth-child(4n+3){background:var(--paper-2)}
   .tile svg{width:40px;height:40px;flex:none}
+  .tile.wide{grid-column:1/-1;background:linear-gradient(90deg,var(--pink-bg),var(--paper-2))}
   .tile h3{font-size:18px;font-weight:700;line-height:1.25}
   .tile p{font-size:14px;color:var(--soft);margin-top:2px;line-height:1.4}
   @media(max-width:860px){.acts-grid{grid-template-columns:1fr}.salt{max-width:460px;margin:0 auto}.salt .note{left:0}}
@@ -326,6 +327,7 @@
         <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="8" r="4" fill="#fde3ec"/><path d="M20 12v12M8 15l12 3 12-3M20 24l-7 11M20 24l7 11"/></svg><div><h3>Гимнастика</h3><p>Гибкость, сила и хорошая осанка</p></div></div>
         <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="13" width="22" height="18" rx="5" fill="#fde3ec"/><circle cx="16" cy="22" r="2"/><circle cx="24" cy="22" r="2"/><path d="M20 13V7M17 6h6M5 20v6M35 20v6"/></svg><div><h3>Робототехника</h3><p>Собираем, программируем, изобретаем</p></div></div>
         <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#2d7fd3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h18v10a9 9 0 0 1-18 0z" fill="#ddeafb"/><path d="M11 14h1M18 14h1M11 21c2 2 6 2 8 0M24 14h10v10a9 9 0 0 1-12 8.5"/><path d="M28 20h1M31 20h1"/></svg><div><h3>Актёрское мастерство</h3><p>Сцена, роли и уверенность в себе</p></div></div>
+        <div class="tile wide"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="13" height="13" rx="3" fill="#fde3ec"/><circle cx="28.5" cy="11.5" r="6.5" stroke="#2d7fd3" fill="#ddeafb"/><path d="M11.5 22l7 12h-14z" stroke="#2d7fd3" fill="#ddeafb"/><rect x="22" y="22" width="13" height="13" rx="3" fill="#fde3ec"/></svg><div><h3>Развивающие занятия</h3><p>Речь, логика, память, мелкая моторика и творчество — по возрасту, в игровой форме</p></div></div>
       </div>
     </div>
   </div>
