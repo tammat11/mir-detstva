@@ -92,6 +92,22 @@
   .point p{color:var(--soft);font-size:16px}
   @media(max-width:800px){.about-head,.points{grid-template-columns:1fr}.about-head{gap:12px}}
 
+  /* activities */
+  .acts{padding:96px 0}
+  .acts-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center}
+  .salt{position:relative}
+  .salt img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:28px;box-shadow:0 18px 40px rgba(31,43,77,.18)}
+  .salt .note{position:absolute;left:-10px;bottom:22px;background:#fff;border-radius:14px;padding:10px 16px;box-shadow:0 10px 24px rgba(31,43,77,.15);transform:rotate(-3deg);font-family:"Caveat",cursive;font-size:26px;color:var(--blue);line-height:1.1}
+  .acts h2{margin-bottom:28px}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .tile{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:18px;background:var(--pink-bg)}
+  .tile:nth-child(4n+2),.tile:nth-child(4n+3){background:var(--paper-2)}
+  .tile svg{width:40px;height:40px;flex:none}
+  .tile h3{font-size:18px;font-weight:700;line-height:1.25}
+  .tile p{font-size:14px;color:var(--soft);margin-top:2px;line-height:1.4}
+  @media(max-width:860px){.acts-grid{grid-template-columns:1fr}.salt{max-width:460px;margin:0 auto}.salt .note{left:0}}
+  @media(max-width:480px){.tiles{grid-template-columns:1fr}}
+
   /* weekend */
   .weekend{padding:96px 0}
   .notebook{position:relative;background-color:#fff;background-image:linear-gradient(#dfe9f5 1px,transparent 1px),linear-gradient(90deg,#dfe9f5 1px,transparent 1px);background-size:24px 24px;border-radius:6px;padding:56px 56px 48px 88px;box-shadow:0 18px 40px rgba(43,40,64,.1);display:grid;grid-template-columns:1.1fr .9fr;gap:40px}
@@ -163,6 +179,7 @@
     <a href="#" class="brand"><img src="logo.png" alt=""><span>Мир детства<small>детский сад в Алматы</small></span></a>
     <nav class="menu">
       <a href="#about">О саде</a>
+      <a href="#acts">Занятия</a>
       <a href="#weekend">Группа выходного дня</a>
       <a href="#parents">Как записаться</a>
       <a href="#contacts">Контакты</a>
@@ -221,8 +238,8 @@
         <div><h3>Индивидуальный подход</h3><p>Замечаем характер и темп каждого ребёнка. Работаем с детьми с ЗРР.</p></div>
       </div>
       <div class="point">
-        <svg viewBox="0 0 48 48" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30c4-3 8-3 12 0s8 3 12 0 8-3 12 0M6 38c4-3 8-3 12 0s8 3 12 0 8-3 12 0" stroke="#2d7fd3"/><circle cx="30" cy="14" r="5" stroke="#2d7fd3" fill="#ddeafb"/></svg>
-        <div><h3>Свой бассейн</h3><p>Плавание укрепляет здоровье, а дети его просто обожают.</p></div>
+        <svg viewBox="0 0 48 48" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 40l6-28 6 28M10 12l10 0M30 8l4 8 8 1-6 5 2 8-8-4-8 4 2-8-6-5 8-1z" stroke="#2d7fd3" fill="#ddeafb"/></svg>
+        <div><h3>Праздники</h3><p>Утренники и тематические праздники — с костюмами и сюрпризами.</p></div>
       </div>
       <div class="point">
         <svg viewBox="0 0 48 48" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 42c-8 0-12-8-12-16 0-6 5-10 12-10s12 4 12 10c0 8-4 16-12 16z" stroke="#e23a7a" fill="#fde3ec"/><path d="M24 16c0-5 3-9 8-10M24 16c-2-4-6-6-10-5" stroke="#e23a7a"/></svg>
@@ -235,6 +252,27 @@
       <div class="point">
         <svg viewBox="0 0 48 48" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c8 6 10 14 6 20h-12c-4-6-2-14 6-20zM20 26v14M28 26v14M14 40h20" stroke="#e23a7a" fill="#fde3ec"/></svg>
         <div><h3>Зелёный двор</h3><p>Безопасная территория с площадкой для игр и прогулок.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="acts" id="acts">
+  <div class="wrap acts-grid">
+    <figure class="salt">
+      <img src="img/salt.jpg" alt="Дети играют в солевой шахте детского сада">
+      <figcaption class="note">наша солевая шахта</figcaption>
+    </figure>
+    <div>
+      <span class="kicker">что есть в саду</span>
+      <h2>Занятия, которые дети ждут</h2>
+      <div class="tiles">
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4l10 10-10 22L10 14z" fill="#fde3ec"/><path d="M10 14h20M20 4v32"/></svg><div><h3>Солевая шахта</h3><p>Спокойная атмосфера и полезный воздух</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#2d7fd3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 26c3-3 6-3 9 0s6 3 9 0 6-3 9 0 4 2 5 1M4 33c3-3 6-3 9 0s6 3 9 0 6-3 9 0 4 2 5 1"/><circle cx="26" cy="12" r="5" fill="#ddeafb"/></svg><div><h3>Плавание</h3><p>Занятия в нашем бассейне</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#2d7fd3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 34h10l-2-12h-6zM12 36h16" fill="#ddeafb"/><circle cx="20" cy="11" r="5" fill="#ddeafb"/><path d="M15 20h10"/></svg><div><h3>Шахматы</h3><p>Учимся думать и планировать</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="8" r="4" fill="#fde3ec"/><path d="M20 12v12M8 15l12 3 12-3M20 24l-7 11M20 24l7 11"/></svg><div><h3>Гимнастика</h3><p>Гибкость, сила и хорошая осанка</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="13" width="22" height="18" rx="5" fill="#fde3ec"/><circle cx="16" cy="22" r="2"/><circle cx="24" cy="22" r="2"/><path d="M20 13V7M17 6h6M5 20v6M35 20v6"/></svg><div><h3>Робототехника</h3><p>Собираем, программируем, изобретаем</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#2d7fd3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h18v10a9 9 0 0 1-18 0z" fill="#ddeafb"/><path d="M11 14h1M18 14h1M11 21c2 2 6 2 8 0M24 14h10v10a9 9 0 0 1-12 8.5"/><path d="M28 20h1M31 20h1"/></svg><div><h3>Актёрское мастерство</h3><p>Сцена, роли и уверенность в себе</p></div></div>
       </div>
     </div>
   </div>
