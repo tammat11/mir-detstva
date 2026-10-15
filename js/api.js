@@ -23,7 +23,7 @@
   // Сжимаем фото перед отправкой: телефонные снимки весят 3–10 МБ.
   async function prepareFile(file) {
     if (file.type === "application/pdf") {
-      if (file.size > 8 * 1024 * 1024) throw new Error("PDF больше 8 МБ — сделайте фото или скриншот квитанции");
+      if (file.size > 3 * 1024 * 1024) throw new Error("PDF больше 3 МБ — сделайте скриншот квитанции");
       return { name: file.name, type: file.type, data: await toBase64(file), preview: null };
     }
     try {
@@ -36,7 +36,7 @@
       return { name: file.name.replace(/\.\w+$/, "") + ".jpg", type: "image/jpeg", data: url.split(",")[1], preview: url };
     } catch (e) {
       if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error("Не получилось открыть файл. Загрузите фото (JPG, PNG) или PDF");
-      if (file.size > 8 * 1024 * 1024) throw new Error("Файл больше 8 МБ");
+      if (file.size > 3 * 1024 * 1024) throw new Error("Файл больше 3 МБ — сделайте скриншот квитанции");
       return { name: file.name, type: file.type, data: await toBase64(file), preview: null };
     }
   }
@@ -103,5 +103,12 @@
     return j;
   }
 
-  window.MD = { util, call, prepareFile, isDemo: () => !window.CONFIG.API_URL };
+  // Файл квитанции для панели (приватный — только с паролем)
+  async function fetchFile(key, id) {
+    const res = await fetch(window.CONFIG.API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: "file", key, id }) });
+    if (!res.ok || /json/.test(res.headers.get("Content-Type") || "")) throw new Error("Не удалось открыть файл");
+    return res.blob();
+  }
+
+  window.MD = { util, call, prepareFile, fetchFile, isDemo: () => !window.CONFIG.API_URL };
 })();

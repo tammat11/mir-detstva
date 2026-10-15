@@ -110,7 +110,7 @@
 </style>
 </head>
 <body>
-<div id="demo" class="demo" hidden><b>Демо-режим.</b> Данные только в этом браузере, пароль — любой. Подключите Google Таблицу по инструкции.</div>
+<div id="demo" class="demo" hidden><b>Демо-режим.</b> Данные только в этом браузере, пароль — любой. Откройте сайт по адресу Vercel.</div>
 
 <header class="top">
   <div class="wrap">
@@ -195,7 +195,7 @@
 
   // ---------- вход ----------
   async function load() {
-    const r = await MD.call("data", { key: KEY });
+    const r = await MD.call("data", { key: KEY, month });
     state = { payments: r.payments || [], children: r.children || [], parents: r.parents || [], bot: r.bot || "" };
   }
   $("login").addEventListener("submit", async e => {
@@ -394,14 +394,22 @@
       const bin = atob(p.file.split(",")[1]), arr = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
       const fr = document.createElement("iframe"); fr.src = URL.createObjectURL(new Blob([arr], { type: "application/pdf" })); body.append(fr);
-    } else if (/^https:\/\/drive\.google\.com\//.test(p.file)) {
-      const m = p.file.match(/\/d\/([\w-]+)/);
-      if (m) { const fr = document.createElement("iframe"); fr.src = `https://drive.google.com/file/d/${m[1]}/preview`; body.append(fr); }
-      const a = document.createElement("a"); a.href = p.file; a.target = "_blank"; a.rel = "noopener"; a.className = "btn btn-ghost btn-sm"; a.textContent = "Открыть в Google Диске"; a.style.margin = "12px";
-      body.append(a);
+    } else if (/^blob:/.test(p.file)) { // приватный файл с сервера — загружаем по паролю
+      body.innerHTML = '<p class="empty">Загружаем квитанцию…</p>';
+      MD.fetchFile(KEY, p.id).then(b => {
+        if (!$("modal").classList.contains("on")) return;
+        const url = URL.createObjectURL(b);
+        body.innerHTML = "";
+        if (/pdf/.test(b.type)) { const fr = document.createElement("iframe"); fr.src = url; body.append(fr); }
+        else { const img = new Image(); img.src = url; body.append(img); }
+        const a = document.createElement("a"); a.href = url; a.download = "kvitanciya" + (/pdf/.test(b.type) ? ".pdf" : ".jpg"); a.className = "btn btn-ghost btn-sm"; a.textContent = "Скачать"; a.style.margin = "12px";
+        body.append(a);
+      }).catch(err => { body.innerHTML = `<p class="empty">${esc(err.message)}</p>`; });
     } else body.innerHTML = '<p class="empty">Файл недоступен</p>';
     const kids = [...state.children].sort((a, b) => String(a.group).localeCompare(String(b.group)) || String(a.name).localeCompare(String(b.name)));
-    const months = [-2, -1, 0, 1].map(n => util.shiftMonth(p.month, n));
+    // месяц можно поправить на один вперёд или назад от месяца загрузки
+    const up = (/^p(\d{4})(\d{2})/.exec(p.id) || []).slice(1).join("-") || p.month;
+    const months = [-1, 0, 1].map(n => util.shiftMonth(up, n));
     $("mFoot").innerHTML = `<div class="review">
         <label>Чей платёж<select id="rKid"><option value="">— выберите ребёнка —</option>${kids.map(k => `<option value="${esc(k.id)}"${k.id === p.childId ? " selected" : ""}>${esc(k.name)}${k.group ? " · " + esc(k.group) : ""}</option>`).join("")}</select></label>
         <label>Сумма, ₸<input id="rSum" type="number" min="0" inputmode="numeric" value="${esc(p.amount || "")}"></label>
@@ -461,8 +469,8 @@
       catch (err) { toast(err.message, true); }
     }
   });
-  $("prev").addEventListener("click", () => { month = util.shiftMonth(month, -1); render(); });
-  $("next").addEventListener("click", () => { month = util.shiftMonth(month, 1); render(); });
+  $("prev").addEventListener("click", () => { month = util.shiftMonth(month, -1); render(); refresh(); });
+  $("next").addEventListener("click", () => { month = util.shiftMonth(month, 1); render(); refresh(); });
   $("group").addEventListener("change", render);
   let qt; $("q").addEventListener("input", () => { clearTimeout(qt); qt = setTimeout(render, 150); });
   // новые квитанции подтягиваются сами каждые 2 минуты, пока вкладка открыта
