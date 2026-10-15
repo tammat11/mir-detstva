@@ -35,10 +35,8 @@
   .drop span{font-size:14px;color:var(--soft)}
   .file{display:none;flex-direction:column;align-items:center;gap:12px;background:var(--blue-bg);border-radius:18px;padding:18px;text-align:center}
   .file.on{display:flex}
-  .file .thumb{width:auto;max-width:100%;height:auto;max-height:320px;min-width:120px;min-height:120px;border-radius:12px;object-fit:contain;background:#fff;display:grid;place-items:center;flex:none;font-weight:800;color:var(--pink);font-size:13px}
-  .file .meta{min-width:0;max-width:100%}
-  .file .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .file .meta span{font-size:13px;color:var(--soft)}
+  .file svg{width:56px;height:56px}
+  .file b{font-size:19px}
   .file button{background:none;border:0;color:var(--soft);font-size:14px;text-decoration:underline}
   .err{color:var(--bad);font-size:14px;min-height:0}
   .submit{width:100%;padding:16px;font-size:17px}
@@ -73,7 +71,7 @@
       <p>Ничего заполнять не нужно — просто приложите квитанцию.</p>
       <ol class="steps">
         <li>Оплатите садик удобным способом</li>
-        <li>Сделайте фото или скриншот квитанции</li>
+        <li>Сохраните квитанцию или сделайте скриншот</li>
         <li>Загрузите её здесь — и всё, мы сами отметим оплату</li>
       </ol>
       <p class="help">Вопросы по оплате? <a href="https://wa.me/77772829292" target="_blank" rel="noopener">Напишите в WhatsApp</a></p>
@@ -86,12 +84,12 @@
                     <div class="drop" id="drop">
             <input type="file" id="fileInput" accept="image/*,application/pdf">
             <svg viewBox="0 0 48 48" fill="none" stroke="#2d7fd3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 34H12a8 8 0 0 1-1-15.9A11 11 0 0 1 32.5 15 8.5 8.5 0 0 1 36 34h-2"/><path d="M24 40V24M18 29l6-6 6 6" stroke="#e23a7a"/></svg>
-            <b>Выберите фото или PDF</b>
+            <b>Прикрепить квитанцию</b>
             <span>или перетащите файл сюда</span>
           </div>
           <div class="file" id="file">
-            <div class="thumb" id="thumb">PDF</div>
-            <div class="meta"><b id="fname"></b><span id="fsize"></span></div>
+            <svg viewBox="0 0 56 56" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><circle cx="28" cy="28" r="24" stroke="#22a06b" fill="#e3f6ec"/><path d="M17 29l8 8 14-16" stroke="#22a06b"/></svg>
+            <b id="fstate">Квитанция прикреплена</b>
             <button type="button" id="fclear">Заменить</button>
           </div>
         </div>
@@ -125,23 +123,17 @@
   async function pick(file) {
     if (!file) return;
     $("err").textContent = "";
-    $("fname").textContent = file.name;
-    $("fsize").textContent = "обрабатываем…";
+    $("fstate").textContent = "Обрабатываем…";
     $("drop").style.display = "none"; $("file").classList.add("on");
     try {
       prepared = await MD.prepareFile(file);
-      const kb = Math.round(prepared.data.length * 3 / 4 / 1024);
-      $("fsize").textContent = (kb > 1024 ? (kb / 1024).toFixed(1) + " МБ" : kb + " КБ") + " · готово к отправке";
-      const t = $("thumb");
-      if (prepared.preview) t.outerHTML = `<img class="thumb" id="thumb" src="${prepared.preview}" alt="">`;
-      else t.textContent = "PDF";
+      $("fstate").textContent = "Квитанция прикреплена";
       $("submit").hidden = false;
     } catch (e) { clearFile(); $("err").textContent = e.message; }
   }
   function clearFile() {
     prepared = null; $("fileInput").value = ""; $("submit").hidden = true;
     $("file").classList.remove("on"); $("drop").style.display = "";
-    $("thumb").outerHTML = '<div class="thumb" id="thumb">PDF</div>';
   }
   $("fileInput").addEventListener("change", e => pick(e.target.files[0]));
   $("fclear").addEventListener("click", () => { clearFile(); $("fileInput").click(); });
@@ -151,7 +143,7 @@
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
-    if (!prepared) { $("err").textContent = "Выберите фото или файл квитанции"; return; }
+    if (!prepared) { $("err").textContent = "Прикрепите квитанцию"; return; }
 
     const btn = $("submit");
     btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Отправляем…';
