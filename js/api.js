@@ -71,8 +71,10 @@
         });
         demo.save(db); return { ok: true };
       }
+      if (action === "info") return { ok: true, bot: "" };
       if (!p.key) throw new Error("Введите пароль");
-      if (action === "data") return { ok: true, payments: db.payments, children: db.children };
+      if (action === "remind") return { ok: true, sent: 0 };
+      if (action === "data") return { ok: true, payments: db.payments, children: db.children, parents: [], bot: "" };
       if (action === "review") {
         const x = db.payments.find(r => r.id === p.id);
         if (x) Object.assign(x, { status: p.status, childId: p.childId ?? x.childId, amount: Number(p.amount ?? x.amount) || 0, month: p.month || x.month });

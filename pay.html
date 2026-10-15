@@ -41,6 +41,13 @@
   .err{color:var(--bad);font-size:14px;min-height:0}
   .submit{width:100%;padding:16px;font-size:17px}
 
+  .tgbox{display:flex;align-items:center;gap:14px;background:#229ed9;color:#fff;border-radius:18px;padding:18px 20px;text-decoration:none;transition:transform .15s,background .15s}
+  .tgbox:hover{transform:translateY(-2px);background:#1c8fc6}
+  .tgbox svg{width:44px;height:44px;flex:none;background:rgba(255,255,255,.18);border-radius:50%;padding:9px}
+  .tgbox b{display:block;font-size:19px}
+  .tgbox small{display:block;font-size:14px;opacity:.9;line-height:1.35;margin-top:2px}
+  .or{text-align:center;color:var(--soft);font-size:14px;margin:14px 0;display:flex;align-items:center;gap:12px}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
   .done{display:none;text-align:center;padding:24px 8px}
   .done.on{display:block}
   .done svg{width:96px;height:96px;margin:0 auto 14px;display:block}
@@ -78,6 +85,11 @@
     </section>
 
     <section class="card">
+      <a class="tgbox" id="tgbox" target="_blank" rel="noopener" hidden>
+        <svg viewBox="0 0 24 24"><path fill="#fff" d="M21.9 4.6 18.7 19.8c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2l-11 6.9-4.7-1.5c-1-.3-1-1 .2-1.5L20.5 3.4c.9-.3 1.6.2 1.4 1.2z"/></svg>
+        <span><b>Отправить через Telegram</b><small>Придёт уведомление, когда оплату подтвердят, и напоминание об оплате</small></span>
+      </a>
+      <p class="or" id="or" hidden>или загрузите здесь</p>
       <form id="form" novalidate>
 
         <div>
@@ -117,6 +129,11 @@
   const $ = id => document.getElementById(id);
   const form = $("form");
   if (MD.isDemo()) $("demo").hidden = false;
+  else MD.call("info").then(r => {
+    if (!r.bot) return;
+    $("tgbox").href = "https://t.me/" + encodeURIComponent(r.bot);
+    $("tgbox").hidden = false; $("or").hidden = false;
+  }).catch(() => {});
 
 
   let prepared = null;

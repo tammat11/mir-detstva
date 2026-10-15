@@ -84,6 +84,10 @@
     .acts{justify-content:flex-start;margin-top:6px}
   }
 
+  .bulk{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:var(--blue-bg);border-bottom:1px solid var(--line);font-size:15px}
+  .bulk a{color:var(--blue)}
+  .src{display:inline-block;font-size:11px;font-weight:700;color:#229ed9;background:#e3f3fb;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+
   /* форма ребёнка */
   .kid-form{display:grid;grid-template-columns:2fr 2fr 1.5fr 1.2fr 1.2fr auto;gap:10px;padding:16px;border-bottom:1px solid var(--line);background:#fbfbfe;align-items:end}
   .kid-form input{padding:10px 12px}
@@ -155,6 +159,7 @@
     <button class="tab" data-t="paid">Оплатили <span class="n" id="nPaid">0</span></button>
     <button class="tab" data-t="all">Все квитанции <span class="n" id="nAll">0</span></button>
     <button class="tab" data-t="kids">Список детей <span class="n" id="nKids">0</span></button>
+    <button class="tab" data-t="tg">Telegram <span class="n" id="nTg">0</span></button>
   </div>
   <div class="panel">
     <div class="search"><input id="q" placeholder="Поиск по имени или телефону"></div>
@@ -180,8 +185,8 @@
   if (MD.isDemo()) $("demo").hidden = false;
 
   let KEY = sessionStorage.getItem("md_key") || "";
-  let state = { payments: [], children: [] };
-  let month = util.monthKey(), tab = "unpaid", editId = null;
+  let state = { payments: [], children: [], parents: [], bot: "" };
+  let month = util.monthKey(), tab = "unpaid", editId = null, prefill = null;
 
   function toast(msg, err) {
     const t = $("toast"); t.textContent = msg; t.className = "toast show" + (err ? " err" : "");
@@ -191,7 +196,7 @@
   // ---------- вход ----------
   async function load() {
     const r = await MD.call("data", { key: KEY });
-    state = { payments: r.payments || [], children: r.children || [] };
+    state = { payments: r.payments || [], children: r.children || [], parents: r.parents || [], bot: r.bot || "" };
   }
   $("login").addEventListener("submit", async e => {
     e.preventDefault();
@@ -270,25 +275,27 @@
     const check = pays.filter(p => p.status === "Новая");
     const done = rows.filter(r => r.st === "ok" || r.st === "part");
     $("nUnpaid").textContent = unpaid.length; $("nCheck").textContent = check.length;
-    $("nPaid").textContent = done.length; $("nAll").textContent = pays.length; $("nKids").textContent = state.children.length;
+    $("nPaid").textContent = done.length; $("nAll").textContent = pays.length; $("nKids").textContent = state.children.length; $("nTg").textContent = state.parents.length;
 
     const q = util.norm($("q").value), qd = util.digits($("q").value);
     const hit = (...xs) => !q || xs.some(x => util.norm(x).includes(q)) || (qd.length >= 3 && xs.some(x => util.digits(x).includes(qd)));
 
     const v = $("view");
     if (tab === "kids") return renderKids(v, hit);
+    if (tab === "tg") return renderTg(v, hit);
     if (!state.children.length && tab !== "all" && tab !== "check") {
       v.innerHTML = `<div class="empty"><b>Сначала добавьте детей</b>Откройте вкладку «Список детей» — без неё не понять, кто ещё не оплатил.</div>`; return;
     }
     if (tab === "unpaid") {
       const list = unpaid.filter(r => hit(r.c.name, r.c.parent, r.c.phone));
-      v.innerHTML = list.length ? table(["Ребёнок", "Группа", "Сумма", "Статус", ""], list.map(r => `<tr>
+      const tgList = list.filter(r => hasTg(r.c));
+      v.innerHTML = (tgList.length ? `<div class="bulk"><span>В Telegram можно напомнить сразу ${tgList.length} ${plural(tgList.length, "родителю", "родителям", "родителям")}</span><button class="btn btn-blue btn-sm" data-remind="${esc(tgList.map(r => r.c.id).join(","))}">🔔 Напомнить всем в Telegram</button></div>` : "") + (list.length ? table(["Ребёнок", "Группа", "Сумма", "Статус", ""], list.map(r => `<tr>
         <td><b>${esc(r.c.name)}</b><span class="sub">${esc(r.c.parent)} · ${esc(fmtPhone(r.c.phone))}</span></td>
         <td>${esc(r.c.group || "—")}</td>
         <td>${r.st === "part" ? esc(util.money(r.okSum)) + ' <span class="sub">из ' + esc(util.money(r.c.fee)) + "</span>" : esc(r.c.fee ? util.money(r.c.fee) : "—")}</td>
         <td>${r.st === "part" ? '<span class="pill part">Частично</span>' : r.ps.some(p => p.status === "Новая") ? '<span class="pill new">На проверке</span>' : '<span class="pill none">Не оплачено</span>'}</td>
-        <td class="r"><div class="acts"><a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${remind(r)}">Напомнить</a></div></td></tr>`))
-        : `<div class="empty"><b>Все оплатили 🎉</b>За ${esc(util.monthNameLower(month))} долгов нет.</div>`;
+        <td class="r"><div class="acts">${hasTg(r.c) ? `<button class="btn btn-blue btn-sm" data-remind="${esc(r.c.id)}">Telegram</button>` : ""}<a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${remind(r)}">WhatsApp</a></div></td></tr>`))
+        : `<div class="empty"><b>Все оплатили 🎉</b>За ${esc(util.monthNameLower(month))} долгов нет.</div>`);
       return;
     }
     if (tab === "paid") {
@@ -307,7 +314,7 @@
       const c = matchChild(p);
       return `<tr>
         <td><button class="thumbs" data-open="${esc(p.id)}">${isImg(p.file) ? `<img class="thumbs" src="${esc(p.file)}" alt="">` : "ФАЙЛ"}</button></td>
-        <td>${c ? `<b>${esc(c.name)}</b><span class="sub">${esc(c.group || "")}</span>` : '<span style="color:var(--soft)">Ребёнок не выбран</span>'}</td>
+        <td>${c ? `<b>${esc(c.name)}</b>` : '<span style="color:var(--soft)">Ребёнок не выбран</span>'}${p.chat ? '<span class="src">Telegram</span>' : ""}${c && c.group ? `<span class="sub">${esc(c.group)}</span>` : ""}</td>
         <td>${esc(p.amount ? util.money(p.amount) : "—")}</td>
         <td>${esc(util.date(p.date))}</td>
         <td>${pill(p.status)}</td>
@@ -321,9 +328,27 @@
     }).length;
   }
 
+  const hasTg = c => state.parents.some(p => util.digits(p.phone) && util.digits(p.phone) === util.digits(c.phone));
+  const plural = (n, a, b, c) => n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? b : c;
+
+  function renderTg(v, hit) {
+    const link = state.bot ? `<div class="bulk"><span>Бот: <a href="https://t.me/${esc(state.bot)}" target="_blank" rel="noopener"><b>@${esc(state.bot)}</b></a> — отправьте эту ссылку родителям</span><button class="btn btn-ghost btn-sm" data-copy="https://t.me/${esc(state.bot)}">Скопировать ссылку</button></div>`
+      : `<div class="bulk"><span>Бот ещё не подключён — см. инструкцию «НАСТРОЙКА-ОПЛАТ.md».</span></div>`;
+    const list = state.parents.filter(p => hit(p.name, p.phone, p.childName)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    v.innerHTML = link + (list.length ? table(["Родитель", "Телефон", "Дети", ""], list.map(p => {
+      const mine = state.children.filter(c => util.digits(c.phone) === util.digits(p.phone));
+      return `<tr>
+        <td><b>${esc(p.name)}</b>${p.username ? `<span class="sub">@${esc(p.username)}</span>` : ""}</td>
+        <td>${esc(fmtPhone(p.phone))}</td>
+        <td>${mine.length ? mine.map(c => esc(c.name)).join(", ") : `<span class="pill none">Не привязан</span>${p.childName ? `<span class="sub">со слов: ${esc(p.childName)}</span>` : ""}`}</td>
+        <td class="r"><div class="acts">${mine.length ? "" : `<button class="btn btn-pink btn-sm" data-addkid="${esc(p.chat)}">Добавить ребёнка</button>`}</div></td></tr>`;
+    })) : `<div class="empty"><b>Пока никто не зарегистрировался</b>Родители появятся здесь, когда напишут боту и поделятся номером.</div>`);
+  }
+
   function renderKids(v, hit) {
     const list = state.children.filter(c => hit(c.name, c.parent, c.phone)).sort((a, b) => String(a.group).localeCompare(String(b.group)) || String(a.name).localeCompare(String(b.name)));
-    const e = state.children.find(c => c.id === editId) || {};
+    const e = state.children.find(c => c.id === editId) || prefill || {};
+    prefill = null;
     v.innerHTML = `<form class="kid-form" id="kidForm">
         <label>Ребёнок<input name="name" required value="${esc(e.name || "")}"></label>
         <label>Родитель<input name="parent" value="${esc(e.parent || "")}"></label>
@@ -411,6 +436,22 @@
       try { await MD.call("review", req); closeModal(); await refresh(); toast(b.dataset.st === "Подтверждена" ? "Оплата подтверждена" : "Квитанция отклонена"); }
       catch (err) { toast(err.message, true); b.disabled = false; }
       return;
+    }
+    if (b.dataset.remind) {
+      b.disabled = true;
+      try {
+        const r = await MD.call("remind", { key: KEY, childIds: b.dataset.remind.split(","), month });
+        toast(MD.isDemo() ? "В демо-режиме сообщения не отправляются" : r.sent ? `Отправлено напоминаний: ${r.sent}` : "Родитель ещё не подключил бота", !r.sent && !MD.isDemo());
+      } catch (err) { toast(err.message, true); }
+      b.disabled = false; return;
+    }
+    if (b.dataset.copy) { navigator.clipboard?.writeText(b.dataset.copy).then(() => toast("Ссылка скопирована"), () => toast(b.dataset.copy)); return; }
+    if (b.dataset.addkid) {
+      const p = state.parents.find(x => x.chat === b.dataset.addkid);
+      prefill = p ? { name: p.childName, parent: p.name, phone: p.phone } : null;
+      editId = null; tab = "kids";
+      document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x.dataset.t === "kids"));
+      render(); $("kidForm").scrollIntoView({ behavior: "smooth", block: "center" }); return;
     }
     if (b.dataset.edit) { editId = b.dataset.edit; render(); $("kidForm").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     if (b.dataset.del) {
