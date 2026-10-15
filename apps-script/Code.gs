@@ -13,6 +13,14 @@
  * TG_SECRET, BOT_USERNAME, FOLDER_ID, ADMIN_CHATS заполняются сами.
  */
 
+// Можно вписать настройки прямо сюда (скрипт приватный) — тогда «Свойства скрипта» не нужны.
+const SETTINGS = {
+  SHEET_ID: "",   // id таблицы, если скрипт создан отдельно от неё
+  ADMIN_KEY: "",
+  BOT_TOKEN: "",
+  SITE_URL: "",
+};
+
 const PAYMENTS = "Оплаты";
 const CHILDREN = "Дети";
 const PARENTS = "Родители (Telegram)";
@@ -27,9 +35,34 @@ const TZ = "Asia/Almaty";
 const WHATSAPP = "77772829292";
 const MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
 
+// Первое открытие ссылки веб-приложения показывает форму запуска бота
 function doGet() {
-  return json({ ok: true, service: "mir-detstva-payments" });
+  if (prop("SETUP_DONE")) return json({ ok: true, service: "mir-detstva-payments" });
+  return HtmlService.createHtmlOutput(SETUP_PAGE).setTitle("Запуск бота").addMetaTag("viewport", "width=device-width, initial-scale=1");
 }
+
+// Вызывается из формы запуска (google.script.run)
+function completeSetup(token, password) {
+  if (prop("SETUP_DONE")) throw new Error("Бот уже запущен");
+  token = String(token || "").trim(); password = String(password || "").trim();
+  if (!/^\d+:[\w-]{30,}$/.test(token)) throw new Error("Проверьте токен — его выдаёт @BotFather");
+  if (password.length < 8) throw new Error("Пароль — минимум 8 символов");
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty("BOT_TOKEN", token);
+  props.setProperty("ADMIN_KEY", password);
+  return setup();
+}
+
+const SETUP_PAGE = '<style>body{font:17px -apple-system,Roboto,sans-serif;max-width:420px;margin:0 auto;padding:24px;color:#1f2b4d}' +
+  'h1{font-size:24px}input{font:inherit;width:100%;box-sizing:border-box;padding:14px;border:1.5px solid #ccd;border-radius:12px;margin:6px 0 16px}' +
+  'button{font:inherit;font-weight:700;width:100%;padding:16px;border:0;border-radius:14px;background:#e23a7a;color:#fff}label{font-size:14px;color:#5f6782}#msg{margin-top:16px}</style>' +
+  '<h1>Запуск бота «Мир детства»</h1>' +
+  '<label>Токен бота (из @BotFather)</label><input id="t" autocomplete="off">' +
+  '<label>Придумайте пароль для садика</label><input id="p" type="password" autocomplete="new-password">' +
+  '<button id="b" onclick="go()">Запустить</button><div id="msg"></div>' +
+  '<script>function go(){var b=document.getElementById("b"),m=document.getElementById("msg");b.disabled=true;m.textContent="Запускаем…";' +
+  'google.script.run.withSuccessHandler(function(u){m.innerHTML="✅ Бот <b>@"+u+"</b> запущен! Можно закрывать страницу.";b.style.display="none"})' +
+  '.withFailureHandler(function(e){m.textContent="⚠️ "+e.message;b.disabled=false}).completeSetup(document.getElementById("t").value,document.getElementById("p").value)}</script>';
 
 function doPost(e) {
   // Запросы от Telegram приходят с ?tg=<секрет>
@@ -381,9 +414,11 @@ function remindDebtors() {
 
 function setup() {
   const props = PropertiesService.getScriptProperties();
-  ["ADMIN_KEY", "BOT_TOKEN", "WEB_APP_URL"].forEach(function (k) {
-    if (!props.getProperty(k)) throw new Error("Добавьте свойство скрипта " + k);
+  ["ADMIN_KEY", "BOT_TOKEN"].forEach(function (k) {
+    if (!prop(k)) throw new Error("Добавьте свойство скрипта " + k);
   });
+  const webUrl = prop("WEB_APP_URL") || ScriptApp.getService().getUrl();
+  if (!webUrl || !/\/exec$/.test(webUrl)) throw new Error("Сначала разверните скрипт как веб-приложение и откройте его ссылку");
   let secret = props.getProperty("TG_SECRET");
   if (!secret) { secret = Utilities.getUuid().replace(/-/g, ""); props.setProperty("TG_SECRET", secret); }
 
@@ -391,7 +426,7 @@ function setup() {
   if (!me.ok) throw new Error("Токен бота не подходит: " + me.description);
   props.setProperty("BOT_USERNAME", me.result.username);
 
-  const hook = tg("setWebhook", { url: props.getProperty("WEB_APP_URL") + "?tg=" + secret, allowed_updates: ["message", "callback_query"], drop_pending_updates: true });
+  const hook = tg("setWebhook", { url: webUrl + "?tg=" + secret, allowed_updates: ["message", "callback_query"], drop_pending_updates: true });
   if (!hook.ok) throw new Error("Не удалось подключить бота: " + hook.description);
   tg("setMyCommands", { commands: [{ command: "start", description: "Начать" }, { command: "status", description: "Мой статус оплаты" }, { command: "help", description: "Помощь" }] });
 
@@ -401,12 +436,14 @@ function setup() {
 
   folder();
   sheet(PAYMENTS, P_HEAD); sheet(CHILDREN, C_HEAD); sheet(PARENTS, R_HEAD);
+  props.setProperty("SETUP_DONE", "1");
   console.log("Готово! Бот: https://t.me/" + me.result.username);
+  return me.result.username;
 }
 
 // =================== помощники ===================
 
-function prop(k) { return PropertiesService.getScriptProperties().getProperty(k); }
+function prop(k) { return PropertiesService.getScriptProperties().getProperty(k) || SETTINGS[k] || null; }
 
 function tg(method, payload) {
   const res = UrlFetchApp.fetch("https://api.telegram.org/bot" + prop("BOT_TOKEN") + "/" + method, {
@@ -467,7 +504,7 @@ function checkKey(key) {
 }
 
 function sheet(name, head) {
-  const ss = SpreadsheetApp.getActive();
+  const ss = prop("SHEET_ID") ? SpreadsheetApp.openById(prop("SHEET_ID")) : SpreadsheetApp.getActive();
   let sh = ss.getSheetByName(name);
   if (!sh) {
     sh = ss.insertSheet(name);
