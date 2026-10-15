@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Оплаты — Мир детства</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  body{background:#f6f7fb}
+  main{padding:28px 0 64px}
+
+  /* вход */
+  .login{max-width:380px;margin:12vh auto 0;background:#fff;border-radius:24px;padding:32px;box-shadow:0 14px 40px rgba(31,43,77,.08);display:grid;gap:16px;text-align:center}
+  .login img{width:72px;margin:0 auto}
+  .login h1{font-size:24px;font-weight:800}
+  .login p{color:var(--soft);font-size:14px;margin-top:-8px}
+
+  /* шапка панели */
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .bar h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+  .month{display:flex;align-items:center;gap:6px;background:#fff;border-radius:14px;padding:6px;box-shadow:0 4px 14px rgba(31,43,77,.06)}
+  .month button{width:38px;height:38px;border-radius:10px;border:0;background:var(--blue-bg);color:var(--blue);font-size:18px;font-weight:800}
+  .month button:hover{background:#d6e7fb}
+  .month b{min-width:150px;text-align:center;font-size:17px}
+  .tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .tools select{width:auto;padding:10px 12px}
+
+  /* показатели */
+  .stats{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:16px;margin-bottom:22px}
+  .stat{background:#fff;border-radius:20px;padding:20px;box-shadow:0 4px 14px rgba(31,43,77,.05)}
+  .stat small{display:block;color:var(--soft);font-size:14px;margin-bottom:6px}
+  .stat b{font-size:30px;font-weight:800;line-height:1.1}
+  .stat em{font-style:normal;color:var(--soft);font-size:14px;display:block;margin-top:4px}
+  .stat.main{display:flex;align-items:center;gap:18px}
+  .ring{width:96px;height:96px;flex:none}
+  .ring circle{fill:none;stroke-width:10}
+  .ring .bg{stroke:var(--pink-bg)}
+  .ring .fg{stroke:var(--ok);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .8s ease}
+  .ring text{font:800 20px Rubik,sans-serif;fill:var(--ink)}
+  .stat.ok b{color:var(--ok)} .stat.none b{color:var(--pink)} .stat.new b{color:var(--warn)}
+  .bar-money{height:8px;border-radius:99px;background:var(--blue-bg);overflow:hidden;margin-top:10px}
+  .bar-money i{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .8s ease}
+  @media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.stat.main{grid-column:1/-1}}
+
+  /* по группам */
+  .groups{background:#fff;border-radius:20px;padding:20px;margin-bottom:22px;box-shadow:0 4px 14px rgba(31,43,77,.05)}
+  .groups h2{font-size:17px;font-weight:700;margin-bottom:12px}
+  .g{display:grid;grid-template-columns:140px 1fr 70px;gap:12px;align-items:center;padding:6px 0;font-size:15px}
+  .g .track{height:12px;background:var(--pink-bg);border-radius:99px;overflow:hidden}
+  .g .track i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--ok));border-radius:99px;transition:width .8s ease}
+  .g span:last-child{text-align:right;color:var(--soft)}
+  @media(max-width:560px){.g{grid-template-columns:90px 1fr 56px}}
+
+  /* вкладки и таблицы */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .tab{border:0;background:#fff;padding:10px 16px;border-radius:12px;font-weight:600;color:var(--soft);box-shadow:0 2px 8px rgba(31,43,77,.04)}
+  .tab.on{background:var(--ink);color:#fff}
+  .tab .n{display:inline-block;min-width:22px;padding:0 6px;margin-left:6px;border-radius:99px;background:var(--pink-bg);color:var(--pink);font-size:13px}
+  .tab.on .n{background:rgba(255,255,255,.18);color:#fff}
+  .panel{background:#fff;border-radius:20px;box-shadow:0 4px 14px rgba(31,43,77,.05);overflow:hidden}
+  .search{padding:14px 16px;border-bottom:1px solid var(--line)}
+  .search input{max-width:340px;padding:10px 12px}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:13px;font-weight:600;color:var(--soft);text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);background:#fbfbfe}
+  td{padding:12px 16px;border-bottom:1px solid #f0f0f6;vertical-align:middle;font-size:15px}
+  tr:last-child td{border-bottom:0}
+  td .sub{display:block;font-size:13px;color:var(--soft)}
+  td.r,th.r{text-align:right}
+  .acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+  .thumbs{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--blue-bg);display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--blue);border:0;cursor:pointer}
+  .empty{padding:48px 16px;text-align:center;color:var(--soft)}
+  .empty b{display:block;font-size:18px;color:var(--ink);margin-bottom:4px}
+  @media(max-width:760px){
+    table,tbody,tr,td{display:block;width:100%}
+    thead{display:none}
+    tr{padding:12px 16px;border-bottom:1px solid var(--line)}
+    td{padding:3px 0;border:0}
+    td.r{text-align:left}
+    .acts{justify-content:flex-start;margin-top:6px}
+  }
+
+  /* форма ребёнка */
+  .kid-form{display:grid;grid-template-columns:2fr 2fr 1.5fr 1.2fr 1.2fr auto;gap:10px;padding:16px;border-bottom:1px solid var(--line);background:#fbfbfe;align-items:end}
+  .kid-form input{padding:10px 12px}
+  @media(max-width:900px){.kid-form{grid-template-columns:1fr 1fr}}
+
+  /* просмотр квитанции */
+  .modal{position:fixed;inset:0;background:rgba(20,24,40,.7);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}
+  .modal.on{display:flex}
+  .modal .box{background:#fff;border-radius:18px;max-width:720px;width:100%;max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+  .modal .head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);gap:10px}
+  .modal .body{overflow:auto;background:#f3f4f8;display:grid;place-items:center;min-height:200px}
+  .modal .body img{max-width:100%;display:block}
+  .modal .body iframe{width:100%;height:70vh;border:0}
+  .modal .foot{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .x{border:0;background:var(--blue-bg);width:36px;height:36px;border-radius:10px;font-size:18px}
+</style>
+</head>
+<body>
+<div id="demo" class="demo" hidden><b>Демо-режим.</b> Данные только в этом браузере, пароль — любой. Подключите Google Таблицу по инструкции.</div>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="brand"><img src="logo.png" alt=""><span>Мир детства<small>оплаты</small></span></a>
+    <div class="tools">
+      <a href="pay.html" class="back" target="_blank">Страница для родителей ↗</a>
+      <button class="btn btn-ghost btn-sm" id="logout" hidden>Выйти</button>
+    </div>
+  </div>
+</header>
+
+<form class="login" id="login">
+  <img src="logo.png" alt="">
+  <h1>Вход для садика</h1>
+  <p>Здесь видно, кто оплатил, а кто нет</p>
+  <input type="password" id="key" placeholder="Пароль" autocomplete="current-password" required>
+  <p class="err" id="loginErr" style="color:var(--bad);margin:0"></p>
+  <button class="btn btn-pink" id="loginBtn">Войти</button>
+</form>
+
+<main class="wrap" id="app" hidden>
+  <div class="bar">
+    <h1>Оплаты</h1>
+    <div class="tools">
+      <select id="group"><option value="">Все группы</option></select>
+      <div class="month"><button id="prev" aria-label="Предыдущий месяц">‹</button><b id="mlabel"></b><button id="next" aria-label="Следующий месяц">›</button></div>
+      <button class="btn btn-ghost btn-sm" id="refresh" title="Обновить">↻ Обновить</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat main">
+      <svg class="ring" viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="42"/><circle class="fg" id="ring" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264"/><text x="50" y="57" text-anchor="middle" id="pct">0%</text></svg>
+      <div><small>Оплатили</small><b id="sPaid">0 из 0</b><em id="sPart"></em></div>
+    </div>
+    <div class="stat none"><small>Не оплатили</small><b id="sNone">0</b><em id="sNoneSub">детей</em></div>
+    <div class="stat new"><small>На проверке</small><b id="sNew">0</b><em>квитанций</em></div>
+    <div class="stat"><small>Собрано</small><b id="sMoney">0 ₸</b><em id="sExpect"></em><div class="bar-money"><i id="moneyBar" style="width:0"></i></div></div>
+  </div>
+
+  <div class="groups" id="groupsBox" hidden><h2>По группам</h2><div id="groups"></div></div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-t="unpaid">Не оплатили <span class="n" id="nUnpaid">0</span></button>
+    <button class="tab" data-t="check">На проверке <span class="n" id="nCheck">0</span></button>
+    <button class="tab" data-t="paid">Оплатили <span class="n" id="nPaid">0</span></button>
+    <button class="tab" data-t="all">Все квитанции <span class="n" id="nAll">0</span></button>
+    <button class="tab" data-t="kids">Список детей <span class="n" id="nKids">0</span></button>
+  </div>
+  <div class="panel">
+    <div class="search"><input id="q" placeholder="Поиск по имени или телефону"></div>
+    <div id="view"></div>
+  </div>
+</main>
+
+<div class="modal" id="modal">
+  <div class="box">
+    <div class="head"><div><b id="mTitle"></b><span class="sub" id="mSub" style="display:block;font-size:13px;color:var(--soft)"></span></div><button class="x" id="mClose" aria-label="Закрыть">✕</button></div>
+    <div class="body" id="mBody"></div>
+    <div class="foot" id="mFoot"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+  const { util } = MD, esc = util.esc;
+  const $ = id => document.getElementById(id);
+  if (MD.isDemo()) $("demo").hidden = false;
+
+  let KEY = sessionStorage.getItem("md_key") || "";
+  let state = { payments: [], children: [] };
+  let month = util.monthKey(), tab = "unpaid", editId = null;
+
+  function toast(msg, err) {
+    const t = $("toast"); t.textContent = msg; t.className = "toast show" + (err ? " err" : "");
+    clearTimeout(toast.t); toast.t = setTimeout(() => t.className = "toast", 3200);
+  }
+
+  // ---------- вход ----------
+  async function load() {
+    const r = await MD.call("data", { key: KEY });
+    state = { payments: r.payments || [], children: r.children || [] };
+  }
+  $("login").addEventListener("submit", async e => {
+    e.preventDefault();
+    KEY = $("key").value.trim(); if (!KEY) return;
+    $("loginBtn").disabled = true; $("loginErr").textContent = "";
+    try { await load(); sessionStorage.setItem("md_key", KEY); showApp(); }
+    catch (err) { $("loginErr").textContent = err.message; }
+    finally { $("loginBtn").disabled = false; }
+  });
+  $("logout").addEventListener("click", () => { sessionStorage.removeItem("md_key"); location.reload(); });
+  function showApp() { $("login").hidden = true; $("app").hidden = false; $("logout").hidden = false; render(); }
+  if (KEY) load().then(showApp).catch(() => sessionStorage.removeItem("md_key"));
+
+  async function refresh() {
+    try { await load(); render(); } catch (e) { toast(e.message, true); }
+  }
+  $("refresh").addEventListener("click", async () => { await refresh(); toast("Обновлено"); });
+
+  // ---------- расчёты ----------
+  // Квитанцию привязываем к ребёнку по телефону родителя, а если не совпал — по имени ребёнка.
+  function matchChild(p) {
+    const ph = util.digits(p.phone), nm = util.norm(p.child);
+    const byPhone = state.children.filter(c => ph && util.digits(c.phone) === ph);
+    if (byPhone.length === 1) return byPhone[0];
+    // у родителя несколько детей — уточняем по имени
+    return byPhone.find(c => util.norm(c.name) === nm) || state.children.find(c => util.norm(c.name) === nm) || byPhone[0] || null;
+  }
+  function compute() {
+    const g = $("group").value;
+    const kids = state.children.filter(c => !g || c.group === g);
+    const pays = state.payments.filter(p => p.month === month);
+    const byKid = new Map(kids.map(c => [c.id, []]));
+    const orphan = [];
+    pays.forEach(p => { const c = matchChild(p); if (c && byKid.has(c.id)) byKid.get(c.id).push(p); else if (!c) orphan.push(p); });
+    const rows = kids.map(c => {
+      const ps = byKid.get(c.id);
+      const okSum = ps.filter(p => p.status === "Подтверждена").reduce((s, p) => s + (Number(p.amount) || 0), 0);
+      const hasOk = ps.some(p => p.status === "Подтверждена");
+      const hasNew = ps.some(p => p.status === "Новая");
+      const fee = Number(c.fee) || 0;
+      let st = "none";
+      if (hasOk) st = fee && okSum < fee ? "part" : "ok";
+      else if (hasNew) st = "new";
+      return { c, ps, okSum, st };
+    });
+    const visiblePays = pays.filter(p => { const c = matchChild(p); return !g || (c && c.group === g) || (!c && !g); });
+    return { kids, rows, pays: visiblePays, orphan };
+  }
+
+  // ---------- отрисовка ----------
+  function render() {
+    $("mlabel").textContent = util.monthName(month);
+    const groups = [...new Set(state.children.map(c => c.group).filter(Boolean))].sort();
+    const gs = $("group"), cur = gs.value;
+    gs.innerHTML = '<option value="">Все группы</option>' + groups.map(x => `<option${x === cur ? " selected" : ""}>${esc(x)}</option>`).join("");
+
+    const { kids, rows, pays } = compute();
+    const paid = rows.filter(r => r.st === "ok").length, part = rows.filter(r => r.st === "part").length;
+    const unpaid = rows.filter(r => r.st !== "ok");
+    const fresh = pays.filter(p => p.status === "Новая").length;
+    const collected = pays.filter(p => p.status === "Подтверждена").reduce((s, p) => s + (Number(p.amount) || 0), 0);
+    const expected = kids.reduce((s, c) => s + (Number(c.fee) || 0), 0);
+    const pct = kids.length ? Math.round(paid / kids.length * 100) : 0;
+
+    $("sPaid").textContent = `${paid} из ${kids.length}`;
+    $("sPart").textContent = "детей — полностью";
+    $("sNone").textContent = unpaid.length;
+    $("sNoneSub").textContent = part ? `детей, из них частично: ${part}` : "детей";
+    $("sNew").textContent = fresh;
+    $("sMoney").textContent = util.money(collected);
+    $("sExpect").textContent = expected ? "из " + util.money(expected) + " ожидаемых" : "укажите суммы в списке детей";
+    $("moneyBar").style.width = expected ? Math.min(100, collected / expected * 100) + "%" : "0";
+    $("pct").textContent = pct + "%";
+    $("ring").style.strokeDashoffset = 264 - 264 * pct / 100;
+
+    // по группам
+    const gRows = groups.map(name => ({ name, all: state.children.filter(c => c.group === name).length, ok: paidInGroup(name) }));
+    $("groupsBox").hidden = groups.length < 2 || !!$("group").value;
+    $("groups").innerHTML = gRows.map(x => `<div class="g"><span>${esc(x.name)}</span><span class="track"><i style="width:${x.all ? x.ok / x.all * 100 : 0}%"></i></span><span>${x.ok}/${x.all}</span></div>`).join("");
+
+    const check = pays.filter(p => p.status === "Новая");
+    const done = rows.filter(r => r.st === "ok" || r.st === "part");
+    $("nUnpaid").textContent = unpaid.length; $("nCheck").textContent = check.length;
+    $("nPaid").textContent = done.length; $("nAll").textContent = pays.length; $("nKids").textContent = state.children.length;
+
+    const q = util.norm($("q").value), qd = util.digits($("q").value);
+    const hit = (...xs) => !q || xs.some(x => util.norm(x).includes(q)) || (qd.length >= 3 && xs.some(x => util.digits(x).includes(qd)));
+
+    const v = $("view");
+    if (tab === "kids") return renderKids(v, hit);
+    if (!state.children.length && tab !== "all" && tab !== "check") {
+      v.innerHTML = `<div class="empty"><b>Сначала добавьте детей</b>Откройте вкладку «Список детей» — без неё не понять, кто ещё не оплатил.</div>`; return;
+    }
+    if (tab === "unpaid") {
+      const list = unpaid.filter(r => hit(r.c.name, r.c.parent, r.c.phone));
+      v.innerHTML = list.length ? table(["Ребёнок", "Группа", "Сумма", "Статус", ""], list.map(r => `<tr>
+        <td><b>${esc(r.c.name)}</b><span class="sub">${esc(r.c.parent)} · ${esc(fmtPhone(r.c.phone))}</span></td>
+        <td>${esc(r.c.group || "—")}</td>
+        <td>${r.st === "part" ? esc(util.money(r.okSum)) + ' <span class="sub">из ' + esc(util.money(r.c.fee)) + "</span>" : esc(r.c.fee ? util.money(r.c.fee) : "—")}</td>
+        <td>${r.st === "part" ? '<span class="pill part">Частично</span>' : r.ps.some(p => p.status === "Новая") ? '<span class="pill new">На проверке</span>' : '<span class="pill none">Не оплачено</span>'}</td>
+        <td class="r"><div class="acts"><a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="${remind(r)}">Напомнить</a></div></td></tr>`))
+        : `<div class="empty"><b>Все оплатили 🎉</b>За ${esc(util.monthNameLower(month))} долгов нет.</div>`;
+      return;
+    }
+    if (tab === "paid") {
+      const list = done.filter(r => hit(r.c.name, r.c.parent, r.c.phone));
+      v.innerHTML = list.length ? table(["Ребёнок", "Группа", "Оплачено", "Статус", ""], list.map(r => `<tr>
+        <td><b>${esc(r.c.name)}</b><span class="sub">${esc(r.c.parent)}</span></td>
+        <td>${esc(r.c.group || "—")}</td>
+        <td>${esc(util.money(r.okSum))}</td>
+        <td>${r.st === "part" ? '<span class="pill part">Частично</span>' : '<span class="pill ok">Оплачено</span>'}</td>
+        <td class="r"><div class="acts">${r.ps.filter(p => p.status === "Подтверждена").map(p => `<button class="btn btn-ghost btn-sm" data-open="${esc(p.id)}">Квитанция</button>`).join("")}</div></td></tr>`))
+        : `<div class="empty"><b>Пока никто не оплатил</b>Подтверждённые квитанции появятся здесь.</div>`;
+      return;
+    }
+    const list = (tab === "check" ? check : pays).filter(p => hit(p.child, p.parent, p.phone)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    v.innerHTML = list.length ? table(["", "Ребёнок", "Сумма", "Загружена", "Статус", ""], list.map(p => {
+      const c = matchChild(p);
+      return `<tr>
+        <td><button class="thumbs" data-open="${esc(p.id)}">${isImg(p.file) ? `<img class="thumbs" src="${esc(p.file)}" alt="">` : "ФАЙЛ"}</button></td>
+        <td><b>${esc(p.child)}</b><span class="sub">${esc(p.parent)} · ${esc(fmtPhone(p.phone))}${c ? "" : ' · <span style="color:var(--bad)">нет в списке детей</span>'}</span>${p.comment ? `<span class="sub">💬 ${esc(p.comment)}</span>` : ""}</td>
+        <td>${esc(p.amount ? util.money(p.amount) : "—")}</td>
+        <td>${esc(util.date(p.date))}</td>
+        <td>${pill(p.status)}</td>
+        <td class="r"><div class="acts">${p.status !== "Подтверждена" ? `<button class="btn btn-blue btn-sm" data-st="Подтверждена" data-id="${esc(p.id)}">Подтвердить</button>` : ""}${p.status !== "Отклонена" ? `<button class="btn btn-ghost btn-sm" data-st="Отклонена" data-id="${esc(p.id)}">Отклонить</button>` : ""}</div></td></tr>`;
+    })) : `<div class="empty"><b>${tab === "check" ? "Нет новых квитанций" : "Квитанций пока нет"}</b>${tab === "check" ? "Всё проверено." : "Отправьте родителям ссылку на страницу оплаты."}</div>`;
+  }
+  function paidInGroup(name) {
+    return state.children.filter(c => c.group === name).filter(c => {
+      const sum = state.payments.filter(p => p.month === month && p.status === "Подтверждена" && matchChild(p)?.id === c.id).reduce((s, p) => s + (Number(p.amount) || 0), 0);
+      return sum > 0 && (!c.fee || sum >= c.fee);
+    }).length;
+  }
+
+  function renderKids(v, hit) {
+    const list = state.children.filter(c => hit(c.name, c.parent, c.phone)).sort((a, b) => String(a.group).localeCompare(String(b.group)) || String(a.name).localeCompare(String(b.name)));
+    const e = state.children.find(c => c.id === editId) || {};
+    v.innerHTML = `<form class="kid-form" id="kidForm">
+        <label>Ребёнок<input name="name" required value="${esc(e.name || "")}"></label>
+        <label>Родитель<input name="parent" value="${esc(e.parent || "")}"></label>
+        <label>Телефон родителя<input name="phone" type="tel" required value="${esc(e.phone ? fmtPhone(e.phone) : "")}"></label>
+        <label>Группа<input name="group" list="glist" value="${esc(e.group || "")}"></label>
+        <label>Сумма в месяц, ₸<input name="fee" type="number" min="0" value="${esc(e.fee || "")}"></label>
+        <button class="btn btn-pink">${editId ? "Сохранить" : "Добавить"}</button>
+        <datalist id="glist">${[...new Set(state.children.map(c => c.group).filter(Boolean))].map(g => `<option value="${esc(g)}">`).join("")}</datalist>
+      </form>` + (list.length ? table(["Ребёнок", "Телефон", "Группа", "Сумма", ""], list.map(c => `<tr>
+        <td><b>${esc(c.name)}</b><span class="sub">${esc(c.parent || "")}</span></td>
+        <td>${esc(fmtPhone(c.phone))}</td><td>${esc(c.group || "—")}</td><td>${esc(c.fee ? util.money(c.fee) : "—")}</td>
+        <td class="r"><div class="acts"><button class="btn btn-ghost btn-sm" data-edit="${esc(c.id)}">Изменить</button><button class="btn btn-ghost btn-sm" data-del="${esc(c.id)}">Удалить</button></div></td></tr>`))
+      : `<div class="empty"><b>Список пуст</b>Добавьте детей, чтобы видеть, кто не оплатил.</div>`);
+    $("kidForm").addEventListener("submit", async ev => {
+      ev.preventDefault();
+      const f = Object.fromEntries(new FormData(ev.target));
+      if (util.digits(f.phone).length < 10) return toast("Проверьте телефон", true);
+      const child = { id: editId || "", name: f.name.trim(), parent: f.parent.trim(), phone: util.digits(f.phone), group: f.group.trim(), fee: Number(f.fee) || 0 };
+      try { await MD.call("saveChild", { key: KEY, child }); editId = null; await refresh(); toast("Сохранено"); }
+      catch (err) { toast(err.message, true); }
+    });
+  }
+
+  const table = (head, rows) => `<table><thead><tr>${head.map((h, i) => `<th${i === head.length - 1 ? ' class="r"' : ""}>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
+  const pill = s => s === "Подтверждена" ? '<span class="pill ok">Подтверждена</span>' : s === "Отклонена" ? '<span class="pill bad">Отклонена</span>' : '<span class="pill new">Новая</span>';
+  const isImg = f => /^data:image\//.test(f || "") ;
+  function fmtPhone(p) { const d = util.digits(p); return d.length === 10 ? `8 ${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6, 8)} ${d.slice(8)}` : (p || ""); }
+  function remind(r) {
+    const site = location.href.replace(/admin\.html.*$/, "pay.html");
+    const text = `Здравствуйте${r.c.parent ? ", " + r.c.parent : ""}! Напоминаем об оплате детского сада «Мир детства» за ${util.monthNameLower(month)}${r.c.fee ? " — " + util.money(r.c.fee - (r.okSum || 0)) : ""}. После оплаты загрузите, пожалуйста, квитанцию: ${site}`;
+    return `https://wa.me/7${util.digits(r.c.phone)}?text=${encodeURIComponent(text)}`;
+  }
+
+  // ---------- просмотр квитанции ----------
+  function openReceipt(id) {
+    const p = state.payments.find(x => x.id === id); if (!p) return;
+    $("mTitle").textContent = p.child;
+    $("mSub").textContent = `${p.parent} · ${util.monthName(p.month)} · ${p.amount ? util.money(p.amount) : "сумма не указана"}`;
+    const body = $("mBody"); body.innerHTML = "";
+    if (/^data:image\//.test(p.file)) { const img = new Image(); img.src = p.file; body.append(img); }
+    else if (/^data:application\/pdf/.test(p.file)) {
+      const bin = atob(p.file.split(",")[1]), arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      const fr = document.createElement("iframe"); fr.src = URL.createObjectURL(new Blob([arr], { type: "application/pdf" })); body.append(fr);
+    } else if (/^https:\/\/drive\.google\.com\//.test(p.file)) {
+      const m = p.file.match(/\/d\/([\w-]+)/);
+      if (m) { const fr = document.createElement("iframe"); fr.src = `https://drive.google.com/file/d/${m[1]}/preview`; body.append(fr); }
+      const a = document.createElement("a"); a.href = p.file; a.target = "_blank"; a.rel = "noopener"; a.className = "btn btn-ghost btn-sm"; a.textContent = "Открыть в Google Диске"; a.style.margin = "12px";
+      body.append(a);
+    } else body.innerHTML = '<p class="empty">Файл недоступен</p>';
+    $("mFoot").innerHTML = (p.status !== "Подтверждена" ? `<button class="btn btn-blue" data-st="Подтверждена" data-id="${esc(p.id)}">Подтвердить оплату</button>` : "") +
+                           (p.status !== "Отклонена" ? `<button class="btn btn-ghost" data-st="Отклонена" data-id="${esc(p.id)}">Отклонить</button>` : "");
+    $("modal").classList.add("on");
+  }
+  const closeModal = () => $("modal").classList.remove("on");
+  $("mClose").addEventListener("click", closeModal);
+  $("modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  // ---------- действия ----------
+  document.addEventListener("click", async e => {
+    const b = e.target.closest("button,a"); if (!b) return;
+    if (b.dataset.t) { tab = b.dataset.t; document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === b)); render(); return; }
+    if (b.dataset.open) { openReceipt(b.dataset.open); return; }
+    if (b.dataset.st) {
+      b.disabled = true;
+      try { await MD.call("setStatus", { key: KEY, id: b.dataset.id, status: b.dataset.st }); closeModal(); await refresh(); toast(b.dataset.st === "Подтверждена" ? "Оплата подтверждена" : "Квитанция отклонена"); }
+      catch (err) { toast(err.message, true); b.disabled = false; }
+      return;
+    }
+    if (b.dataset.edit) { editId = b.dataset.edit; render(); $("kidForm").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    if (b.dataset.del) {
+      const c = state.children.find(x => x.id === b.dataset.del);
+      if (!confirm(`Удалить ${c ? c.name : "ребёнка"} из списка? Квитанции останутся.`)) return;
+      try { await MD.call("deleteChild", { key: KEY, id: b.dataset.del }); await refresh(); toast("Удалено"); }
+      catch (err) { toast(err.message, true); }
+    }
+  });
+  $("prev").addEventListener("click", () => { month = util.shiftMonth(month, -1); render(); });
+  $("next").addEventListener("click", () => { month = util.shiftMonth(month, 1); render(); });
+  $("group").addEventListener("change", render);
+  let qt; $("q").addEventListener("input", () => { clearTimeout(qt); qt = setTimeout(render, 150); });
+  // новые квитанции подтягиваются сами каждые 2 минуты, пока вкладка открыта
+  setInterval(() => { if (!document.hidden && KEY && !$("app").hidden && !$("modal").classList.contains("on") && document.activeElement?.tagName !== "INPUT") refresh(); }, 120000);
+</script>
+</body>
+</html>
