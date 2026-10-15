@@ -2,9 +2,12 @@
   "name": "mir-detstva",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@vercel/blob": "2.8.2",
+    "@vercel/functions": "3.10.1",
     "pdfjs-dist": "4.10.38",
     "tesseract.js": "5.1.1"
   }
