@@ -515,8 +515,8 @@ function parseReceipt(textIn) {
   const dt = all.match(/(\d{2})\.(\d{2})\.(\d{4})(?:\D{0,5}(\d{1,2}):(\d{2}))?/);
   if (dt) r.date = dt[3] + "-" + dt[2] + "-" + dt[1] + (dt[4] ? " " + ("0" + dt[4]).slice(-2) + ":" + dt[5] : "");
   const val = function (re) { const m = all.match(re); return m ? m[1].trim().slice(0, 60) : undefined; };
-  r.sender = val(/Отправитель[:\s]+([^\n]+)/i);
-  r.recipient = val(/Получатель[:\s]+([^\n]+)/i);
+  r.sender = val(/Отправитель[: \t]+([^\n]+)/i);
+  r.recipient = val(/Получатель[: \t]+([^\n]+)/i);
   if (!r.recipient && amountLine >= 0) {
     const next = lines[amountLine + 1];
     if (next && /[A-Za-zА-Яа-яЁё]/.test(next) && !LABELS_RE.test(next) && !AMOUNT_RE.test(next)) r.recipient = next.slice(0, 60);
