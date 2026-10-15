@@ -384,6 +384,7 @@
   const table = (head, rows) => `<table><thead><tr>${head.map((h, i) => `<th${i === head.length - 1 ? ' class="r"' : ""}>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
   // что распознано в квитанции + предупреждения
   const warn = p => (p.ocrText ? `<span class="sub">🔎 ${esc(p.ocrText)}</span>` : "") +
+    (p.ocr && p.ocr.amountUnsure ? '<span class="sub" style="color:var(--warn);font-weight:700">⚠️ Сумма может быть неточной — сверьте</span>' : "") +
     (p.duplicate ? '<span class="sub" style="color:var(--bad);font-weight:700">⚠️ Квитанция уже была</span>' : "") +
     (p.wrongReceiver ? '<span class="sub" style="color:var(--bad);font-weight:700">⚠️ Другой получатель</span>' : "") +
     (p.ocr && p.ocr.success === false ? '<span class="sub" style="color:var(--bad);font-weight:700">⚠️ Перевод не прошёл</span>' : "");

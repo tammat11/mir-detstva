@@ -168,7 +168,7 @@
     try {
       const r = await MD.call("upload", { month: util.monthKey(), file: { name: prepared.name, type: prepared.type, data: prepared.data } });
       $("doneNote").textContent = r.duplicate ? "⚠️ Эту квитанцию уже отправляли раньше. Если это другая оплата — загрузите её квитанцию."
-        : r.amount ? `Сумма в квитанции: ${util.money(r.amount)}. Мы проверим оплату и отметим её.` : "Спасибо! Мы проверим оплату и отметим её.";
+        : r.amount && !r.unsure ? `Сумма в квитанции: ${util.money(r.amount)}. Мы проверим оплату и отметим её.` : "Спасибо! Мы проверим оплату и отметим её.";
       form.style.display = "none"; $("done").classList.add("on");
     } catch (err) {
       $("err").textContent = err.message;
