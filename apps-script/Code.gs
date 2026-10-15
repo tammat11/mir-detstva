@@ -512,11 +512,23 @@ function parseReceipt(textIn) {
     for (let j = qi + 1; j < lines.length && /^[\d ]+$/.test(lines[j]); j++) d += lines[j].replace(/\D/g, "");
     if (d.length >= 6) r.receiptNo = d;
   }
+  if (!r.receiptNo) {
+    for (let i = 0; i < lines.length; i++) {
+      if (!/^\d{10,}$/.test(lines[i].replace(/ /g, ""))) continue;
+      let dd = lines[i].replace(/\D/g, "");
+      if (lines[i + 1] && /^\d{1,6}$/.test(lines[i + 1].replace(/ /g, ""))) dd += lines[i + 1].replace(/\D/g, "");
+      r.receiptNo = dd; break;
+    }
+  }
   const dt = all.match(/(\d{2})\.(\d{2})\.(\d{4})(?:\D{0,5}(\d{1,2}):(\d{2}))?/);
   if (dt) r.date = dt[3] + "-" + dt[2] + "-" + dt[1] + (dt[4] ? " " + ("0" + dt[4]).slice(-2) + ":" + dt[5] : "");
   const val = function (re) { const m = all.match(re); return m ? m[1].trim().slice(0, 60) : undefined; };
   r.sender = val(/Отправитель[: \t]+([^\n]+)/i);
   r.recipient = val(/Получатель[: \t]+([^\n]+)/i);
+  if (!r.sender || LABELS_RE.test(r.sender)) {
+    const fio = lines.filter(function (l) { return /^[А-ЯЁA-Z][а-яёa-z-]+ [А-ЯЁA-Z]\. ?[А-ЯЁA-Z]\.?$/.test(l); })[0];
+    r.sender = fio ? fio.slice(0, 60) : undefined;
+  }
   if (!r.recipient && amountLine >= 0) {
     const next = lines[amountLine + 1];
     if (next && /[A-Za-zА-Яа-яЁё]/.test(next) && !LABELS_RE.test(next) && !AMOUNT_RE.test(next)) r.recipient = next.slice(0, 60);
