@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Мир детства — детский сад в Алматы</title>
-<meta name="description" content="Детский сад «Мир детства» в Алматы, мкр. Таусамалы. Дети от 1,8 до 6 лет, бассейн, фермерские продукты, два языка. ул. Цветочная, 1/4.">
+<meta name="description" content="Детский сад «Мир детства» в Алматы, мкр. Таугуль. Дети от 1,8 до 6 лет, бассейн, фермерские продукты, русский и казахский языки, английский. ул. Цветочная, 1/4.">
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -104,6 +104,7 @@
   .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .tile{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:18px;background:var(--pink-bg)}
   .tile:nth-child(4n+2),.tile:nth-child(4n+3){background:var(--paper-2)}
+  .tile:last-child:nth-child(odd){grid-column:1/-1}
   .tile svg{width:40px;height:40px;flex:none}
   .tile h3{font-size:18px;font-weight:700;line-height:1.25}
   .tile p{font-size:14px;color:var(--soft);margin-top:2px;line-height:1.4}
@@ -295,10 +296,9 @@
   </div>
   <div class="wrap hero-grid">
     <div>
-      <span class="kicker">детский сад в Таусамалы</span>
       <h1>Место, где <span class="b">ребёнку</span> <span class="u">хорошо
         <svg viewBox="0 0 300 16" preserveAspectRatio="none"><path d="M3 11 C 60 3, 120 3, 170 8 S 260 14, 297 5" fill="none" stroke="#e23a7a" stroke-width="6" stroke-linecap="round"/></svg></span> с&nbsp;первого дня</h1>
-      <p class="lead">Принимаем детей от 1,8 до 6 лет. Привыкаем мягко, без слёз и давления. Плаваем в бассейне, едим фермерские продукты и говорим на двух языках.</p>
+      <p class="lead">Принимаем детей от 1,8 до 6 лет. Привыкаем мягко, без слёз и давления. Плаваем в бассейне, едим блюда из фермерских продуктов, говорим по-русски и по-казахски, учим английский.</p>
       <div class="actions">
         <a href="https://wa.me/77772829292" target="_blank" rel="noopener" class="btn btn-wa"><svg><use href="#wa"/></svg>Написать в WhatsApp</a>
         <a href="tel:+77772829292" class="btn btn-line"><svg><use href="#tel"/></svg>Позвонить</a>
@@ -307,7 +307,7 @@
       <div class="facts">
         <div><b>1,8–6</b>лет — возраст<br>детей</div>
         <div><b>5 раз</b>в день<br>кормим</div>
-        <div><b>2 языка</b>обучения<br>в саду</div>
+        <div><b>рус · каз</b>+ английский<br>дополнительно</div>
       </div>
     </div>
 
@@ -343,11 +343,11 @@
       </div>
       <div class="point">
         <svg viewBox="0 0 48 48" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 42c-8 0-12-8-12-16 0-6 5-10 12-10s12 4 12 10c0 8-4 16-12 16z" stroke="#e23a7a" fill="#fde3ec"/><path d="M24 16c0-5 3-9 8-10M24 16c-2-4-6-6-10-5" stroke="#e23a7a"/></svg>
-        <div><h3>Фермерские продукты</h3><p>Пятиразовое сбалансированное питание из свежих продуктов.</p></div>
+        <div><h3>Фермерские продукты</h3><p>Готовим из фермерских продуктов. 5-разовое сбалансированное питание.</p></div>
       </div>
       <div class="point">
         <svg viewBox="0 0 48 48" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h14v24H8zM26 12h14v24H26z" stroke="#e23a7a" fill="#fde3ec"/><path d="M12 19h6M12 25h6M30 19h6M30 25h6" stroke="#e23a7a"/></svg>
-        <div><h3>Два языка</h3><p>Обучение на двух языках — язык приходит естественно, в игре.</p></div>
+        <div><h3>Русский и казахский</h3><p>Обучение на двух языках, английский — дополнительно. Язык приходит естественно, в игре.</p></div>
       </div>
       <div class="point">
         <svg viewBox="0 0 48 48" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c8 6 10 14 6 20h-12c-4-6-2-14 6-20zM20 26v14M28 26v14M14 40h20" stroke="#e23a7a" fill="#fde3ec"/></svg>
@@ -374,7 +374,10 @@
         <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="13" width="22" height="18" rx="5" fill="#fde3ec"/><g class="eyes"><circle cx="16" cy="22" r="2"/><circle cx="24" cy="22" r="2"/></g><path d="M20 13V7M17 6h6M5 20v6M35 20v6"/></svg><div><h3>Робототехника</h3><p>Собираем, программируем, изобретаем</p></div></div>
         <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#2d7fd3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h18v10a9 9 0 0 1-18 0z" fill="#ddeafb"/><path d="M11 14h1M18 14h1M11 21c2 2 6 2 8 0M24 14h10v10a9 9 0 0 1-12 8.5"/><path d="M28 20h1M31 20h1"/></svg><div><h3>Актёрское мастерство</h3><p>Сцена, роли и уверенность в себе</p></div></div>
         <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="13" height="13" rx="3" fill="#fde3ec"/><circle cx="28.5" cy="11.5" r="6.5" stroke="#2d7fd3" fill="#ddeafb"/><path d="M11.5 22l7 12h-14z" stroke="#2d7fd3" fill="#ddeafb"/><rect x="22" y="22" width="13" height="13" rx="3" fill="#fde3ec"/></svg><div><h3>Развивающие занятия</h3><p>Речь, логика, память и моторика — в игровой форме</p></div></div>
-        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="28" width="28" height="6" rx="1.5" fill="#fde3ec"/><rect x="10" y="20" width="20" height="6" rx="1.5" stroke="#2d7fd3" fill="#ddeafb"/><rect x="14" y="12" width="12" height="6" rx="1.5" fill="#fde3ec"/><rect x="17" y="5" width="6" height="5" rx="1.5" stroke="#2d7fd3" fill="#ddeafb"/></svg><div><h3>Монтессори</h3><p>Самостоятельность через пособия и практические задания</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="28" width="28" height="6" rx="1.5" fill="#fde3ec"/><rect x="10" y="20" width="20" height="6" rx="1.5" stroke="#2d7fd3" fill="#ddeafb"/><rect x="14" y="12" width="12" height="6" rx="1.5" fill="#fde3ec"/><rect x="17" y="5" width="6" height="5" rx="1.5" stroke="#2d7fd3" fill="#ddeafb"/></svg><div><h3>Сенсорная студия</h3><p>По Монтессори: самостоятельность через пособия и практические задания</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#2d7fd3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="7" r="4" fill="#ddeafb"/><path d="M22 11l-2 11 6 12M20 22l-7 10M21 15l-10-5M21 15l9 4 5-6"/></svg><div><h3>Хореография</h3><p>Танцы, ритм и красивая осанка</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#2d7fd3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h22a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H16l-7 6v-6H6z" fill="#ddeafb"/><text x="17" y="21" text-anchor="middle" font-size="10" font-weight="800" font-family="Rubik,sans-serif" fill="#e23a7a" stroke="none">EN</text></svg><div><h3>Английский язык</h3><p>Слова, песни и игры на английском</p></div></div>
+        <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#e23a7a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 30V8l16-4v22" /><circle cx="12" cy="30" r="4" fill="#fde3ec"/><circle cx="28" cy="26" r="4" fill="#fde3ec"/><path d="M16 14l16-4" stroke="#2d7fd3"/></svg><div><h3>Логоритмика</h3><p>Речь и движение под музыку</p></div></div>
       </div>
     </div>
   </div>
@@ -411,7 +414,7 @@
     </div>
     <div class="plist">
       <div><b>1. Напишите</b><span>в WhatsApp или позвоните: 8 777 282 92 92</span></div>
-      <div><b>2. Приходите</b><span>на экскурсию — посмотрите сад и познакомьтесь с воспитателями</span></div>
+      <div><b>2. Экскурсия</b><span>проведём экскурсию: покажем сад и познакомим с воспитателями</span></div>
       <div><b>3. Пробный день</b><span>бесплатно: ребёнок проводит день в группе, а вы решаете без спешки</span></div>
       <div><b>4. Адаптация</b><span>ребёнок привыкает мягко и в своём темпе, без давления</span></div>
       <div><b>5. В сад с радостью</b><span>занятия, бассейн, прогулки и вкусная еда каждый день</span></div>
@@ -442,11 +445,11 @@
     <div class="c-grid">
       <div class="c-info">
         <dl>
-          <div><dt>Адрес</dt><dd>Алматы, ул. Цветочная, 1/4<br><span style="font-weight:400;font-size:16px;color:var(--soft)">мкр. Таусамалы</span></dd></div>
+          <div><dt>Адрес</dt><dd>Алматы, ул. Цветочная, 1/4<br><span style="font-weight:400;font-size:16px;color:var(--soft)">мкр. Таугуль</span></dd></div>
           <div><dt>Телефон и WhatsApp</dt><dd><a href="tel:+77772829292">8 777 282 92 92</a></dd></div>
           <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/mir_detstva_detsad" target="_blank" rel="noopener">@mir_detstva_detsad</a></dd></div>
         </dl>
-        <div class="map"><iframe loading="lazy" title="Мир детства на карте" src="https://maps.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B%2C%20%D0%A2%D0%B0%D1%83%D1%81%D0%B0%D0%BC%D0%B0%D0%BB%D1%8B%2C%20%D1%83%D0%BB.%20%D0%A6%D0%B2%D0%B5%D1%82%D0%BE%D1%87%D0%BD%D0%B0%D1%8F%201%2F4&output=embed"></iframe></div>
+        <div class="map"><iframe loading="lazy" title="Мир детства на карте" src="https://maps.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B%2C%20%D0%A2%D0%B0%D1%83%D0%B3%D1%83%D0%BB%D1%8C%2C%20%D1%83%D0%BB.%20%D0%A6%D0%B2%D0%B5%D1%82%D0%BE%D1%87%D0%BD%D0%B0%D1%8F%201%2F4&output=embed"></iframe></div>
       </div>
       <form id="form">
         <h3>Оставить заявку</h3>
