@@ -47,7 +47,7 @@
   @media(max-width:560px){.phone{display:none}.nav .btn{padding:10px 16px;font-size:15px}}
 
   /* hero */
-  .hero{padding:64px 0 40px;overflow:hidden;background:radial-gradient(600px 400px at 85% 30%,#e3efff 0,transparent 70%),radial-gradient(500px 360px at 0% 100%,#fde3ee 0,transparent 70%)}
+  .hero{padding:64px 0 40px;overflow:hidden;background:linear-gradient(transparent 80%,var(--paper)),radial-gradient(600px 400px at 85% 30%,#e3efff 0,transparent 70%),radial-gradient(520px 380px at 0% 62%,#fde3ee 0,transparent 70%)}
   .hero h1 .b{color:var(--blue)}
   .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
   .hero h1{font-size:clamp(40px,6.2vw,70px);line-height:1.02;font-weight:800;letter-spacing:-.03em}
@@ -75,8 +75,9 @@
   .doodle{position:absolute;pointer-events:none}
   @media(max-width:900px){
     .hero-grid{grid-template-columns:1fr}
-    .collage{height:450px;max-width:440px;margin:0 auto;width:100%}
-    .p1{width:60%;left:0}.p2{width:48%;top:215px}
+    .hero{padding-bottom:12px}
+    .collage{height:430px;max-width:440px;margin:0 auto;width:100%}
+    .p1{width:60%;left:0}.p2{width:48%;top:200px}
   }
 
   /* wave divider */
@@ -91,7 +92,7 @@
   .point svg{width:44px;height:44px}
   .point h3{font-size:20px;font-weight:700;margin-bottom:4px}
   .point p{color:var(--soft);font-size:16px}
-  @media(max-width:800px){.about-head,.points{grid-template-columns:1fr}.about-head{gap:12px}}
+  @media(max-width:800px){.about{padding-top:8px}.about-head,.points{grid-template-columns:1fr}.about-head{gap:12px}}
 
   /* activities */
   .acts{padding:88px 0}
@@ -289,14 +290,14 @@
   .js .sticker.in{transform:scale(1) rotate(0)}
   .js .st2{transition-delay:.25s}
   
-  @media(max-width:900px){.sticker{width:92px;height:92px;font-size:18px}.sticker b{font-size:24px}.st2{width:86px;height:86px}.st1{right:-4px;top:110px}.st2{left:-8px;bottom:40px}}
+  @media(max-width:900px){.sticker{width:92px;height:92px;font-size:18px}.sticker b{font-size:20px}.st2{width:86px;height:86px}.st1{right:-4px;top:110px}.st2{left:-8px;bottom:56px}}
 
   /* маркер под словом в заголовке */
   .hl{position:relative;white-space:nowrap;z-index:0}
-  .hl::after{content:"";position:absolute;left:-4px;right:-4px;bottom:.06em;height:.42em;border-radius:6px 10px 8px 12px;background:#ffd6e6;z-index:-1;transform:scaleX(0) rotate(-1deg);transform-origin:left;transition:transform .8s cubic-bezier(.6,.1,.2,1) .35s}
+  .hl::after{content:"";position:absolute;left:-4px;right:-4px;bottom:.06em;height:.42em;border-radius:6px 10px 8px 12px;background:#ffd6e6;z-index:-1;transform:scaleX(0) rotate(-1deg);transform-origin:left;opacity:0;transition:transform .8s cubic-bezier(.6,.1,.2,1) .35s,opacity .2s .35s}
   .hl.b::after{background:#cfe3fb}
   .hl.y::after{background:#ffe9a8}
-  .hl.in::after{transform:scaleX(1) rotate(-1deg)}
+  .hl.in::after{transform:scaleX(1) rotate(-1deg);opacity:1}
   .parents .hl::after{background:rgba(255,214,230,.35)}
 
   /* иконки в белых кружках */
@@ -318,7 +319,7 @@
 
   @media (prefers-reduced-motion:reduce){
     .js .sticker{transform:none}
-    .hl::after{transform:scaleX(1) rotate(-1deg)}
+    .hl::after{transform:scaleX(1) rotate(-1deg);opacity:1}
   }
 </style>
 </head>
