@@ -35,7 +35,7 @@ a{color:#1f6fbf}a:hover{color:#c2185b}
   </div>
   <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding-top: 14px; border-top: 1px dashed #e3e2ef">
     <div><b style="display: block; font-size: 22px; color: {{pink}}; font-weight: 800">1,8–6</b><span style="font-size: 12px; color: #5f6782">лет</span></div>
-    <div><b style="display: block; font-size: 22px; color: {{blue}}; font-weight: 800">5 раз</b><span style="font-size: 12px; color: #5f6782">кормим</span></div>
+    <div><b style="display: block; font-size: 16px; line-height: 1.7; color: {{blue}}; font-weight: 800">5-разовое</b><span style="font-size: 12px; color: #5f6782">сбалансир. питание</span></div>
     <div><b style="display: block; font-size: 16px; line-height: 1.7; color: {{pink}}; font-weight: 800">рус·каз·англ</b><span style="font-size: 12px; color: #5f6782">языки</span></div>
   </div>
 </section>
@@ -55,7 +55,7 @@ a{color:#1f6fbf}a:hover{color:#c2185b}
   <span style="font-family: Caveat, cursive; font-size: 25px; color: {{pink}}">что есть в саду</span>
   <h2 style="margin: 0; font-size: 30px; line-height: 1.1; font-weight: 800">Занятия, которые дети ждут</h2>
   <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-    <sc-for list="{{acts}}" as="a" hint-placeholder-count="10">
+    <sc-for list="{{acts}}" as="a" hint-placeholder-count="12">
       <div style="background: {{a.bg}}; border-radius: 14px; padding: 12px; font-weight: 700; font-size: 15px">{{a.t}}</div>
     </sc-for>
   </div>
@@ -89,7 +89,7 @@ a{color:#1f6fbf}a:hover{color:#c2185b}
 <script type="text/x-dc" data-dc-script data-props='{"pink":{"editor":"color","default":"#c2185b","options":["#c2185b","#e23a7a","#d81b60"]},"blue":{"editor":"color","default":"#1f6fbf","options":["#1f6fbf","#2d7fd3","#1565c0"]},"$preview":{"width":390,"height":2900}}'>
 class Component extends DCLogic {
   renderVals() {
-    const names = ['Солевая шахта', 'Плавание', 'Сенсорная студия', 'Хореография', 'Английский', 'Логоритмика', 'Шахматы', 'Гимнастика', 'Робототехника', 'Актёрское мастерство'];
+    const names = ['Солевая шахта', 'Плавание', 'Сенсорная студия', 'Хореография', 'Английский', 'Логоритмика', 'Шахматы', 'Гимнастика', 'Робототехника', 'Актёрское мастерство', 'Развивающие занятия', '5-разовое питание'];
     return {
       pink: this.props.pink ?? '#c2185b',
       blue: this.props.blue ?? '#1f6fbf',
