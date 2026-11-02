@@ -115,7 +115,8 @@
   /* weekend */
 
   /* жизнь в саду: двор и видео */
-  .life{padding:96px 0;background:var(--paper-2);position:relative}
+  .life{padding:0 0 96px;background:var(--paper-2);position:relative}
+  .life .life-head{margin-top:56px}
   .life-head{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
   .life-head .lead{color:var(--soft);font-size:18px;margin-top:16px}
   .duo{position:relative;height:460px}
@@ -287,6 +288,52 @@
     .js .point svg *,.js .tile svg *{stroke-dashoffset:0;fill-opacity:1}
     .plane-path g{display:none}
   }
+
+  /* ===== милые детали ===== */
+  /* наклейки на коллаже */
+  .sticker{position:absolute;z-index:3;width:116px;height:116px;display:grid;place-items:center;text-align:center;font-family:"Caveat",cursive;font-size:22px;line-height:1;color:#fff;filter:drop-shadow(0 8px 14px rgba(31,43,77,.22))}
+  .sticker svg{position:absolute;inset:0;width:100%;height:100%}
+  .sticker span{position:relative;transform:rotate(-8deg)}
+  .sticker b{display:block;font-size:25px}
+  .st1{right:-6px;top:86px}
+  .st2{left:-26px;bottom:24px;width:104px;height:104px;color:#1f2b4d}
+  .st2 span{transform:rotate(7deg)}
+  .js .sticker{transform:scale(0) rotate(-30deg);transition:transform .7s cubic-bezier(.3,1.7,.5,1)}
+  .js .sticker.in{transform:scale(1) rotate(0)}
+  .js .st2{transition-delay:.25s}
+  .sticker.in svg{animation:jiggle 6s ease-in-out 1.5s infinite}
+  @keyframes jiggle{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(8deg) scale(1.05)}96%{transform:rotate(-6deg)}}
+  @media(max-width:900px){.sticker{width:92px;height:92px;font-size:18px}.sticker b{font-size:24px}.st2{width:86px;height:86px}.st1{right:-4px;top:110px}.st2{left:-8px;bottom:40px}}
+
+  /* маркер под словом в заголовке */
+  .hl{position:relative;white-space:nowrap;z-index:0}
+  .hl::after{content:"";position:absolute;left:-4px;right:-4px;bottom:.06em;height:.42em;border-radius:6px 10px 8px 12px;background:#ffd6e6;z-index:-1;transform:scaleX(0) rotate(-1deg);transform-origin:left;transition:transform .8s cubic-bezier(.6,.1,.2,1) .35s}
+  .hl.b::after{background:#cfe3fb}
+  .hl.y::after{background:#ffe9a8}
+  .hl.in::after{transform:scaleX(1) rotate(-1deg)}
+  .parents .hl::after{background:rgba(255,214,230,.35)}
+
+  /* иконки в белых кружках */
+  .tile svg{width:58px;height:58px;padding:9px;border-radius:50%;background:#fff;box-shadow:0 6px 14px rgba(31,43,77,.08)}
+  .tile{align-items:center}
+
+  /* гирлянда из флажков */
+  .bunting{display:block;width:100%;height:70px;margin-bottom:-20px;overflow:visible}
+  @media(max-width:600px){.bunting{height:46px}}
+  .bunting .flag{transform-box:fill-box;transform-origin:top center;animation:flap 3.2s ease-in-out infinite}
+  .bunting .flag:nth-child(3n){animation-delay:-1s}.bunting .flag:nth-child(3n+1){animation-delay:-2.1s}
+  @keyframes flap{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+
+  /* кнопки приятно «нажимаются» */
+  .btn:active,.trial:active{transform:scale(.95)!important}
+
+  /* конфетти */
+  .confetti{position:fixed;width:10px;height:14px;border-radius:3px;pointer-events:none;z-index:50;will-change:transform,opacity}
+
+  @media (prefers-reduced-motion:reduce){
+    .js .sticker{transform:none}
+    .hl::after{transform:scaleX(1) rotate(-1deg)}
+  }
 </style>
 </head>
 <body>
@@ -346,6 +393,8 @@
       <svg class="doodle d-star" viewBox="0 0 64 64"><path d="M32 4l7 19 20 1-16 12 6 20-17-12-17 12 6-20L5 24l20-1z" fill="#f6c343" stroke="#2b2840" stroke-width="2" stroke-linejoin="round"/></svg>
       <figure class="polaroid p1"><img src="img/yard.webp" alt=""><figcaption>наш двор</figcaption></figure>
       <figure class="polaroid p2"><img src="img/kid.jpg" alt=""><figcaption>мелкая моторика</figcaption></figure>
+      <div class="sticker st1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 3l7.6 8.4 11-2.6 3.4 10.8 10.8 3.4-2.6 11L88.6 42 92 50l-3.4 8 1.6 7.6-10.8 3.4-3.4 10.8-11-2.6L57.6 97 50 89l-7.6 8-7.4-7.6-11 2.6-3.4-10.8-10.8-3.4 2.6-11L5 58l-3-8 3.4-8-2.6-7.6 10.8-3.4 3.4-10.8 11 2.6L42.4 3z" fill="#c2185b"/><circle cx="50" cy="50" r="36" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 5" opacity=".7"/></svg><span>свой<b>бассейн</b></span></div>
+      <div class="sticker st2"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#f6c343"/><circle cx="50" cy="50" r="38" fill="none" stroke="#1f2b4d" stroke-width="2" stroke-dasharray="3 5" opacity=".35"/></svg><span>с любовью<b>к детям</b></span></div>
       <svg class="doodle d-swirl" viewBox="0 0 120 60"><path d="M4 40c14-30 40-30 36-8s-26 14-12-6 46-20 52 4 20 18 36 4" fill="none" stroke="#c2185b" stroke-width="3" stroke-linecap="round"/></svg>
     </div>
   </div>
@@ -356,7 +405,7 @@
 <section class="about" id="about">
   <div class="wrap">
     <div class="about-head">
-      <div><span class="kicker">о нас</span><h2>Что для нас важно каждый день</h2></div>
+      <div><span class="kicker">о нас</span><h2>Что для нас <span class="hl">важно</span> каждый день</h2></div>
       <p>Мы не обещаем «гениев к пяти годам». Мы хотим, чтобы ребёнок шёл в сад с радостью, а вы — забирали его спокойным и довольным.</p>
     </div>
     <div class="points">
@@ -396,7 +445,7 @@
     </figure>
     <div>
       <span class="kicker">что есть в саду</span>
-      <h2>Занятия, которые дети ждут</h2>
+      <h2>Занятия, которые <span class="hl b">дети ждут</span></h2>
       <div class="tiles">
         <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#c2185b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4l10 10-10 22L10 14z" fill="#fde3ec"/><path d="M10 14h20M20 4v32"/></svg><div><h3>Солевая шахта</h3><p>Спокойная атмосфера и полезный воздух</p></div></div>
         <div class="tile"><svg viewBox="0 0 40 40" fill="none" stroke="#1f6fbf" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><g class="swim"><path d="M4 26c3-3 6-3 9 0s6 3 9 0 6-3 9 0 4 2 5 1M4 33c3-3 6-3 9 0s6 3 9 0 6-3 9 0 4 2 5 1"/></g><circle cx="26" cy="12" r="5" fill="#ddeafb"/></svg><div><h3>Плавание</h3><p>Занятия в нашем бассейне</p></div></div>
@@ -416,11 +465,12 @@
 </section>
 
 <section class="life" id="life">
+  <svg class="bunting" viewBox="0 0 1440 80" preserveAspectRatio="none" aria-hidden="true"><path d="M0 6 Q720 70 1440 6" fill="none" stroke="#1f2b4d" stroke-width="1.5" opacity=".35"/><path class="flag" d="M3 8 L37 9 L20 48Z" fill="#c2185b"/><path class="flag" d="M64 13 L98 14 L81 53Z" fill="#1f6fbf"/><path class="flag" d="M125 17 L159 18 L142 57Z" fill="#f6c343"/><path class="flag" d="M186 21 L220 22 L203 61Z" fill="#5aa64a"/><path class="flag" d="M246 24 L280 25 L263 64Z" fill="#e86aa0"/><path class="flag" d="M307 27 L341 28 L324 67Z" fill="#7fb3ea"/><path class="flag" d="M368 30 L402 31 L385 70Z" fill="#c2185b"/><path class="flag" d="M429 32 L463 33 L446 72Z" fill="#1f6fbf"/><path class="flag" d="M490 33 L524 34 L507 73Z" fill="#f6c343"/><path class="flag" d="M551 35 L585 36 L568 75Z" fill="#5aa64a"/><path class="flag" d="M612 36 L646 37 L629 76Z" fill="#e86aa0"/><path class="flag" d="M673 36 L707 37 L690 76Z" fill="#7fb3ea"/><path class="flag" d="M733 36 L767 37 L750 76Z" fill="#c2185b"/><path class="flag" d="M794 36 L828 37 L811 76Z" fill="#1f6fbf"/><path class="flag" d="M855 35 L889 36 L872 75Z" fill="#f6c343"/><path class="flag" d="M916 33 L950 34 L933 73Z" fill="#5aa64a"/><path class="flag" d="M977 32 L1011 33 L994 72Z" fill="#e86aa0"/><path class="flag" d="M1038 30 L1072 31 L1055 70Z" fill="#7fb3ea"/><path class="flag" d="M1099 27 L1133 28 L1116 67Z" fill="#c2185b"/><path class="flag" d="M1160 24 L1194 25 L1177 64Z" fill="#1f6fbf"/><path class="flag" d="M1220 21 L1254 22 L1237 61Z" fill="#f6c343"/><path class="flag" d="M1281 17 L1315 18 L1298 57Z" fill="#5aa64a"/><path class="flag" d="M1342 13 L1376 14 L1359 53Z" fill="#e86aa0"/><path class="flag" d="M1403 8 L1437 9 L1420 48Z" fill="#7fb3ea"/></svg>
   <div class="wrap">
     <div class="life-head">
       <div>
         <span class="kicker">жизнь в саду</span>
-        <h2>Праздники, танцы и&nbsp;прогулки</h2>
+        <h2>Праздники, <span class="hl y">танцы</span> и&nbsp;прогулки</h2>
         <p class="lead">Свой зелёный двор с горкой, каруселью и качелями. А в зале — утренники, танцы и сказочные гости. Посмотрите, как у нас проходят дни.</p>
       </div>
       <div class="duo">
@@ -466,7 +516,7 @@
   <div class="wrap parents-grid">
     <div>
       <span class="kicker">как записаться</span>
-      <h2>Всего несколько шагов до первого дня в саду</h2>
+      <h2>Всего несколько шагов до <span class="hl">первого дня</span> в саду</h2>
       <p class="lead">Ответим на все вопросы, покажем группы и поможем ребёнку спокойно привыкнуть.</p>
     </div>
     <div class="plist">
@@ -498,7 +548,7 @@
 <section class="contacts" id="contacts">
   <div class="wrap">
     <span class="kicker">первый день — бесплатно</span>
-    <h2>Покажем сад, познакомим<br>с воспитателями</h2>
+    <h2><span class="hl">Покажем сад</span>, познакомим<br>с воспитателями</h2>
     <div class="c-grid">
       <div class="c-info">
         <dl>
@@ -586,6 +636,33 @@
       if (!v.muted) document.querySelectorAll(".reel video").forEach(o => { if (o !== v) { o.muted = true; o.closest(".reel").classList.remove("sound"); } });
     });
   });
+
+  // наклейки и маркеры появляются, когда до них долистали
+  const pop = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add("in"); pop.unobserve(e.target); }
+  }), { threshold: .6 });
+  document.querySelectorAll(".sticker, .hl").forEach(el => pop.observe(el));
+
+  // конфетти при нажатии на «записаться»
+  const cols = ["#c2185b", "#1f6fbf", "#f6c343", "#5aa64a", "#ff9fc4"];
+  function confetti(x, y) {
+    if (reduce) return;
+    for (let i = 0; i < 26; i++) {
+      const c = document.createElement("i"); c.className = "confetti";
+      c.style.background = cols[i % cols.length]; c.style.left = x + "px"; c.style.top = y + "px";
+      if (i % 3 === 0) c.style.borderRadius = "50%";
+      document.body.appendChild(c);
+      const a = Math.random() * Math.PI * 2, v = 90 + Math.random() * 140;
+      c.animate([
+        { transform: "translate(-50%,-50%) rotate(0)", opacity: 1 },
+        { transform: `translate(${Math.cos(a) * v}px, ${Math.sin(a) * v - 60}px) rotate(${Math.random() * 720}deg)`, opacity: 1, offset: .6 },
+        { transform: `translate(${Math.cos(a) * v * 1.2}px, ${Math.sin(a) * v + 120}px) rotate(${Math.random() * 900}deg)`, opacity: 0 }
+      ], { duration: 1100 + Math.random() * 500, easing: "cubic-bezier(.2,.6,.4,1)" }).onfinish = () => c.remove();
+    }
+  }
+  document.querySelectorAll(".trial, .btn-pink, .btn-wa, .nav .btn").forEach(b => b.addEventListener("click", e => {
+    const r = b.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2);
+  }));
 </script>
 </body>
 </html>
