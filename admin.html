@@ -398,14 +398,14 @@
     const avgOf = key => { const r = survey.filter(x => x[key]); return r.length ? (r.reduce((s, x) => s + x[key], 0) / r.length).toFixed(1) + " из 5" : "—"; };
     const count = get => { const m = new Map(); survey.forEach(x => [].concat(get(x)).filter(Boolean).forEach(k => m.set(k, (m.get(k) || 0) + 1))); return [...m].sort((a, b) => b[1] - a[1]); };
     const block = (title, rows) => rows.length ? `<div class="groups" style="box-shadow:none;padding:0;margin:0 0 18px"><h2>${title}</h2>${rows.map(([k, n]) => `<div class="g"><span title="${esc(k)}">${esc(k)}</span><span class="track"><i style="width:${n / survey.length * 100}%"></i></span><span>${n}</span></div>`).join("")}</div>` : "";
-    const words = survey.filter(x => (x.complaint || x.idea || x.foodIdea || x.contact) && hit(x.complaint, x.idea, x.foodIdea, x.contact)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const words = survey.filter(x => (x.complaint || x.idea || x.dislikedNote || x.foodNote || x.contact) && hit(x.complaint, x.idea, x.dislikedNote, x.foodNote, x.contact)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
     const cell = (label, t) => t ? `<div style="margin-bottom:6px"><span class="sub" style="display:block;font-weight:700">${label}</span>${esc(t)}</div>` : "";
     v.innerHTML = head +
       `<div class="bulk"><span>Ответов: <b>${survey.length}</b> · Садик: <b>${avgOf("rate")}</b> · Питание: <b>${avgOf("foodRate")}</b></span></div>` +
-      block("Что не нравится", count(x => x.disliked)) + block("Что не нравится в питании", count(x => x.foodBad)) +
+      block("Что хотят изменить в садике", count(x => x.disliked)) + block("Что хотят изменить в питании", count(x => x.foodBad)) +
       block("Что улучшить в первую очередь", count(x => x.priority)) + block("Что нравится", count(x => x.liked)) + block("Как давно в садике", count(x => x.age)) +
       `<h2 style="font-size:17px;margin:6px 0 10px">Свободные ответы</h2>` +
-      (words.length ? table(["Дата", "Оценка", "Ответы", "Контакт"], words.map(x => `<tr><td>${esc(util.date(x.date))}</td><td>${x.rate ? "Садик " + x.rate + "/5" : ""}${x.foodRate ? "<br>Еда " + x.foodRate + "/5" : ""}</td><td style="white-space:pre-wrap">${cell("Что не устраивает", x.complaint)}${cell("Про питание", x.foodIdea)}${cell("Предложение", x.idea)}</td><td class="r">${esc(x.contact) || ""}</td></tr>`)) : '<div class="empty">Текстовых ответов пока нет.</div>');
+      (words.length ? table(["Дата", "Оценка", "Ответы", "Контакт"], words.map(x => `<tr><td>${esc(util.date(x.date))}</td><td>${x.rate ? "Садик " + x.rate + "/5" : ""}${x.foodRate ? "<br>Еда " + x.foodRate + "/5" : ""}</td><td style="white-space:pre-wrap">${cell("Про садик", x.dislikedNote)}${cell("Про питание", x.foodNote)}${cell("Ещё изменить", x.complaint)}${cell("Предложение", x.idea)}</td><td class="r">${esc(x.contact) || ""}</td></tr>`)) : '<div class="empty">Текстовых ответов пока нет.</div>');
   }
 
   const table = (head, rows) => `<table><thead><tr>${head.map((h, i) => `<th${i === head.length - 1 ? ' class="r"' : ""}>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
