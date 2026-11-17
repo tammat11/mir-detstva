@@ -71,8 +71,10 @@
         });
         demo.save(db); return { ok: true };
       }
+      if (action === "survey") { (db.survey = db.survey || []).push({ id: demo.uid(), date: new Date().toISOString(), ...p }); demo.save(db); return { ok: true }; }
       if (action === "info") return { ok: true, bot: "" };
       if (!p.key) throw new Error("Введите пароль");
+      if (action === "surveyData") return { ok: true, items: db.survey || [] };
       if (action === "remind") return { ok: true, sent: 0 };
       if (action === "data") return { ok: true, payments: db.payments, children: db.children, parents: [], bot: "" };
       if (action === "review") {

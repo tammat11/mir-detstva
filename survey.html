@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Опрос — Мир детства</title>
+<meta name="description" content="Помогите сделать сайт детского сада «Мир детства» удобнее — опрос на 2 минуты.">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<style>
+  main{padding:40px 0 64px;max-width:760px}
+  .intro{text-align:center;margin-bottom:28px}
+  .intro .kicker{font-family:"Caveat",cursive;font-size:26px;color:var(--pink);display:block;transform:rotate(-2deg)}
+  .intro h1{font-size:clamp(30px,5vw,44px);line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:4px 0 12px}
+  .intro h1 span{color:var(--blue)}
+  .intro p{color:var(--soft)}
+
+  .progress{height:8px;border-radius:99px;background:var(--blue-bg);overflow:hidden;margin:0 0 20px}
+  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--blue));border-radius:99px;transition:width .4s ease}
+
+  form{display:grid;gap:16px}
+  .q{background:#fff;border-radius:24px;padding:24px 26px;box-shadow:0 14px 40px rgba(31,43,77,.08)}
+  .q h2{font-size:19px;font-weight:700;line-height:1.3;margin-bottom:4px;display:flex;gap:12px;align-items:flex-start}
+  .q h2 b{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--pink);font-size:15px;margin-top:-1px}
+  .q:nth-of-type(even) h2 b{background:var(--blue)}
+  .q .hint{font-size:14px;color:var(--soft);margin:0 0 14px 42px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px;margin-left:42px;margin-top:12px}
+  .opt{position:relative}
+  .opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer;margin:0}
+  .opt span{display:block;padding:10px 16px;border-radius:99px;border:1.5px solid var(--line);background:#fff;font-size:15px;color:var(--ink);font-weight:500;transition:all .15s}
+  .opt:hover span{border-color:var(--blue)}
+  .opt input:checked+span{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);font-weight:700}
+  .multi .opt input:checked+span{background:var(--pink-bg);border-color:var(--pink);color:var(--pink-d)}
+  .opt input:focus-visible+span{box-shadow:0 0 0 4px rgba(45,127,211,.2)}
+
+  .stars{display:flex;gap:6px;margin:12px 0 0 42px}
+  .stars label{display:block;cursor:pointer;font-size:0}
+  .stars input{position:absolute;opacity:0;width:0;height:0}
+  .stars svg{width:44px;height:44px;fill:#eceaf3;transition:fill .15s,transform .15s}
+  .stars label:hover svg{transform:scale(1.12)}
+  .stars label.on svg{fill:var(--sun)}
+  .stars input:focus-visible+svg{outline:3px solid rgba(45,127,211,.3);border-radius:8px}
+  .rate-note{margin:6px 0 0 42px;font-size:14px;color:var(--soft);min-height:21px}
+
+  .q textarea{margin:12px 0 0 42px;width:calc(100% - 42px);min-height:110px;resize:vertical}
+  .q input[type=text]{margin:12px 0 0 42px;width:calc(100% - 42px)}
+  .hp{position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden}
+
+  .err{color:var(--bad);font-size:14px;text-align:center}
+  .submit{width:100%;padding:16px;font-size:17px}
+  .anon{text-align:center;font-size:13px;color:var(--soft)}
+
+  .done{display:none;background:#fff;border-radius:24px;padding:40px 24px;text-align:center;box-shadow:0 14px 40px rgba(31,43,77,.08)}
+  .done.on{display:block}
+  .done svg{width:96px;height:96px;margin:0 auto 14px;display:block}
+  .done circle{stroke-dasharray:290;stroke-dashoffset:290;animation:draw .7s ease forwards}
+  .done path{stroke-dasharray:60;stroke-dashoffset:60;animation:draw .4s .6s ease forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .done h2{font-size:28px;font-weight:800;margin-bottom:8px}
+  .done p{color:var(--soft);margin-bottom:22px}
+
+  @media(max-width:560px){
+    .q{padding:20px 18px}
+    .opts,.stars,.rate-note,.q .hint{margin-left:0}
+    .q textarea,.q input[type=text]{margin-left:0;width:100%}
+    .stars svg{width:40px;height:40px}
+  }
+</style>
+</head>
+<body>
+<div id="demo" class="demo" hidden><b>Демо-режим.</b> Ответы сохраняются только в этом браузере. На сайте в интернете они будут приходить в садик.</div>
+
+<header class="top">
+  <div class="wrap">
+    <a href="index.html" class="brand"><img src="logo.png" alt=""><span>Мир детства<small>опрос для родителей</small></span></a>
+    <a href="index.html" class="back">← На сайт</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <span class="kicker">ваше мнение важно</span>
+    <h1>Как сделать наш сайт <span>удобнее?</span></h1>
+    <p>Опрос займёт 2 минуты. Он анонимный — имя указывать не нужно.</p>
+  </section>
+
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+
+  <form id="form" novalidate>
+    <div class="hp" aria-hidden="true"><label>Сайт <input type="text" id="site" tabindex="-1" autocomplete="off"></label></div>
+
+    <section class="q" data-q="role">
+      <h2><b>1</b>Кто вы?</h2>
+      <div class="opts" data-name="role" data-type="one">
+        <label class="opt"><input type="radio" name="role" value="Родитель ребёнка в нашем саду"><span>Родитель ребёнка в нашем саду</span></label>
+        <label class="opt"><input type="radio" name="role" value="Выбираю детский сад"><span>Выбираю детский сад</span></label>
+        <label class="opt"><input type="radio" name="role" value="Другое"><span>Другое</span></label>
+      </div>
+    </section>
+
+    <section class="q" data-q="freq">
+      <h2><b>2</b>Как часто вы заходите на сайт?</h2>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="freq" value="Впервые"><span>Впервые</span></label>
+        <label class="opt"><input type="radio" name="freq" value="Пару раз в год"><span>Пару раз в год</span></label>
+        <label class="opt"><input type="radio" name="freq" value="Раз в месяц"><span>Раз в месяц</span></label>
+        <label class="opt"><input type="radio" name="freq" value="Каждую неделю"><span>Каждую неделю</span></label>
+      </div>
+    </section>
+
+    <section class="q" data-q="device">
+      <h2><b>3</b>С чего вы обычно заходите?</h2>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="device" value="С телефона"><span>📱 С телефона</span></label>
+        <label class="opt"><input type="radio" name="device" value="С компьютера"><span>💻 С компьютера</span></label>
+        <label class="opt"><input type="radio" name="device" value="С планшета"><span>С планшета</span></label>
+      </div>
+    </section>
+
+    <section class="q" data-q="rate">
+      <h2><b>4</b>Насколько вам удобно пользоваться сайтом?</h2>
+      <p class="hint">1 — неудобно, 5 — отлично</p>
+      <div class="stars" id="stars" role="radiogroup" aria-label="Оценка от 1 до 5">
+        <label><input type="radio" name="rate" value="1"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .9-5.2 4.9 1.4 7L12 17.8 5.8 21.3l1.4-7L2 9.4l7-.9z"/></svg></label>
+        <label><input type="radio" name="rate" value="2"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .9-5.2 4.9 1.4 7L12 17.8 5.8 21.3l1.4-7L2 9.4l7-.9z"/></svg></label>
+        <label><input type="radio" name="rate" value="3"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .9-5.2 4.9 1.4 7L12 17.8 5.8 21.3l1.4-7L2 9.4l7-.9z"/></svg></label>
+        <label><input type="radio" name="rate" value="4"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .9-5.2 4.9 1.4 7L12 17.8 5.8 21.3l1.4-7L2 9.4l7-.9z"/></svg></label>
+        <label><input type="radio" name="rate" value="5"><svg viewBox="0 0 24 24"><path d="M12 2l3 6.5 7 .9-5.2 4.9 1.4 7L12 17.8 5.8 21.3l1.4-7L2 9.4l7-.9z"/></svg></label>
+      </div>
+      <p class="rate-note" id="rateNote"></p>
+    </section>
+
+    <section class="q multi" data-q="useful">
+      <h2><b>5</b>Что на сайте вам полезно?</h2>
+      <p class="hint">Можно выбрать несколько</p>
+      <div class="opts">
+        <label class="opt"><input type="checkbox" name="useful" value="Цены и условия"><span>Цены и условия</span></label>
+        <label class="opt"><input type="checkbox" name="useful" value="О садике и программа"><span>О садике и программа</span></label>
+        <label class="opt"><input type="checkbox" name="useful" value="Фото и видео"><span>Фото и видео</span></label>
+        <label class="opt"><input type="checkbox" name="useful" value="Контакты и адрес"><span>Контакты и адрес</span></label>
+        <label class="opt"><input type="checkbox" name="useful" value="Оплата и квитанции"><span>Оплата и квитанции</span></label>
+        <label class="opt"><input type="checkbox" name="useful" value="Пока ничего"><span>Пока ничего</span></label>
+      </div>
+    </section>
+
+    <section class="q multi" data-q="missing">
+      <h2><b>6</b>Чего вам не хватает?</h2>
+      <p class="hint">Можно выбрать несколько</p>
+      <div class="opts">
+        <label class="opt"><input type="checkbox" name="missing" value="Меню питания"><span>Меню питания</span></label>
+        <label class="opt"><input type="checkbox" name="missing" value="Расписание занятий"><span>Расписание занятий</span></label>
+        <label class="opt"><input type="checkbox" name="missing" value="Новости и объявления"><span>Новости и объявления</span></label>
+        <label class="opt"><input type="checkbox" name="missing" value="Фотоотчёты из группы"><span>Фотоотчёты из группы</span></label>
+        <label class="opt"><input type="checkbox" name="missing" value="Запись на экскурсию"><span>Запись на экскурсию</span></label>
+        <label class="opt"><input type="checkbox" name="missing" value="Личный кабинет родителя"><span>Личный кабинет родителя</span></label>
+        <label class="opt"><input type="checkbox" name="missing" value="Отзывы родителей"><span>Отзывы родителей</span></label>
+        <label class="opt"><input type="checkbox" name="missing" value="Всё есть"><span>Всё есть</span></label>
+      </div>
+    </section>
+
+    <section class="q" data-q="pay">
+      <h2><b>7</b>Как вам удобнее сообщать об оплате?</h2>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="pay" value="Загрузить квитанцию на сайте"><span>Загрузить на сайте</span></label>
+        <label class="opt"><input type="radio" name="pay" value="Отправить в Telegram-бот"><span>Telegram-бот</span></label>
+        <label class="opt"><input type="radio" name="pay" value="Написать в WhatsApp"><span>WhatsApp</span></label>
+        <label class="opt"><input type="radio" name="pay" value="Оплатить онлайн картой"><span>Оплата картой прямо на сайте</span></label>
+      </div>
+    </section>
+
+    <section class="q" data-q="idea">
+      <h2><b>8</b>Что бы вы улучшили или добавили?</h2>
+      <p class="hint">Любые мысли — что мешает, что не нашли, чего хотелось бы</p>
+      <textarea id="idea" maxlength="1500" placeholder="Например: хочу видеть меню на неделю…"></textarea>
+    </section>
+
+    <section class="q" data-q="contact">
+      <h2><b>9</b>Как с вами связаться?</h2>
+      <p class="hint">Необязательно. Оставьте имя или телефон, если готовы обсудить подробнее</p>
+      <input type="text" id="contact" maxlength="100" placeholder="Имя или телефон" autocomplete="off">
+    </section>
+
+    <p class="err" id="err" role="alert"></p>
+    <button class="btn btn-pink submit" id="submit" type="submit">Отправить ответы</button>
+    <p class="anon">Отвечать на все вопросы не обязательно</p>
+  </form>
+
+  <div class="done" id="done">
+    <svg viewBox="0 0 100 100" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><circle cx="50" cy="50" r="44" stroke="#22a06b"/><path d="M31 51l13 13 26-27" stroke="#22a06b"/></svg>
+    <h2>Спасибо!</h2>
+    <p>Ваши ответы помогут сделать сайт удобнее для всех родителей.</p>
+    <a class="btn btn-blue" href="index.html">Вернуться на сайт</a>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const form = $("form");
+  if (MD.isDemo()) $("demo").hidden = false;
+
+  const NOTES = ["", "Очень неудобно", "Скорее неудобно", "Нормально", "Удобно", "Отлично!"];
+  const val = n => (form.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
+  const vals = n => [...form.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value);
+
+  // звёздочки: подсвечиваем все до выбранной
+  function paintStars() {
+    const r = Number(val("rate")) || 0;
+    form.querySelectorAll("#stars label").forEach((l, i) => l.classList.toggle("on", i < r));
+    $("rateNote").textContent = NOTES[r] || "";
+  }
+  // полоска прогресса: сколько вопросов отмечено
+  function progress() {
+    const done = [val("role"), val("freq"), val("device"), val("rate"), vals("useful").length, vals("missing").length, val("pay"), $("idea").value.trim(), $("contact").value.trim()].filter(Boolean).length;
+    $("bar").style.width = Math.round(done / 9 * 100) + "%";
+  }
+  form.addEventListener("change", () => { paintStars(); progress(); });
+  form.addEventListener("input", progress);
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const payload = {
+      role: val("role"), freq: val("freq"), device: val("device"), rate: Number(val("rate")) || 0,
+      useful: vals("useful"), missing: vals("missing"), pay: val("pay"),
+      idea: $("idea").value.trim(), contact: $("contact").value.trim(), site: $("site").value,
+    };
+    if (!payload.rate && !payload.idea && !payload.freq && !payload.useful.length && !payload.missing.length) {
+      $("err").textContent = "Ответьте хотя бы на один вопрос"; return;
+    }
+    const btn = $("submit");
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Отправляем…';
+    $("err").textContent = "";
+    try {
+      await MD.call("survey", payload);
+      form.style.display = "none"; document.querySelector(".progress").style.display = "none";
+      document.querySelector(".intro").style.display = "none";
+      $("done").classList.add("on"); window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      $("err").textContent = err.message;
+    } finally {
+      btn.disabled = false; btn.textContent = "Отправить ответы";
+    }
+  });
+</script>
+</body>
+</html>
