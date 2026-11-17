@@ -395,16 +395,17 @@
     const link = location.href.replace(/admin\.html.*$/, "survey.html");
     const head = `<div class="bulk"><span>Ссылка на опрос для родителей: <a href="${esc(link)}" target="_blank" rel="noopener"><b>survey.html</b></a></span><button class="btn btn-ghost btn-sm" data-copy="${esc(link)}">Скопировать ссылку</button></div>`;
     if (!survey.length) { v.innerHTML = head + '<div class="empty"><b>Ответов пока нет</b>Отправьте родителям ссылку на опрос.</div>'; return; }
-    const rated = survey.filter(x => x.rate), avg = rated.length ? rated.reduce((s, x) => s + x.rate, 0) / rated.length : 0;
-    const count = (get) => { const m = new Map(); survey.forEach(x => [].concat(get(x)).filter(Boolean).forEach(k => m.set(k, (m.get(k) || 0) + 1))); return [...m].sort((a, b) => b[1] - a[1]); };
+    const avgOf = key => { const r = survey.filter(x => x[key]); return r.length ? (r.reduce((s, x) => s + x[key], 0) / r.length).toFixed(1) + " из 5" : "—"; };
+    const count = get => { const m = new Map(); survey.forEach(x => [].concat(get(x)).filter(Boolean).forEach(k => m.set(k, (m.get(k) || 0) + 1))); return [...m].sort((a, b) => b[1] - a[1]); };
     const block = (title, rows) => rows.length ? `<div class="groups" style="box-shadow:none;padding:0;margin:0 0 18px"><h2>${title}</h2>${rows.map(([k, n]) => `<div class="g"><span title="${esc(k)}">${esc(k)}</span><span class="track"><i style="width:${n / survey.length * 100}%"></i></span><span>${n}</span></div>`).join("")}</div>` : "";
-    const ideas = survey.filter(x => (x.idea || x.contact) && hit(x.idea, x.contact, x.role)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const words = survey.filter(x => (x.complaint || x.idea || x.foodIdea || x.contact) && hit(x.complaint, x.idea, x.foodIdea, x.contact)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const cell = (label, t) => t ? `<div style="margin-bottom:6px"><span class="sub" style="display:block;font-weight:700">${label}</span>${esc(t)}</div>` : "";
     v.innerHTML = head +
-      `<div class="bulk"><span>Ответов: <b>${survey.length}</b> · Средняя оценка удобства: <b>${avg ? avg.toFixed(1) + " из 5" : "—"}</b></span></div>` +
-      block("Чего не хватает", count(x => x.missing)) + block("Что полезно", count(x => x.useful)) +
-      block("Как удобнее платить", count(x => x.pay)) + block("С чего заходят", count(x => x.device)) + block("Кто отвечает", count(x => x.role)) +
-      `<h2 style="font-size:17px;margin:6px 0 10px">Пожелания</h2>` +
-      (ideas.length ? table(["Дата", "Оценка", "Пожелание", "Контакт"], ideas.map(x => `<tr><td>${esc(util.date(x.date))}</td><td>${x.rate ? "★".repeat(x.rate) : "—"}</td><td style="white-space:pre-wrap">${esc(x.idea) || "—"}</td><td class="r">${esc(x.contact) || ""}</td></tr>`)) : '<div class="empty">Текстовых пожеланий пока нет.</div>');
+      `<div class="bulk"><span>Ответов: <b>${survey.length}</b> · Садик: <b>${avgOf("rate")}</b> · Питание: <b>${avgOf("foodRate")}</b></span></div>` +
+      block("Что не нравится", count(x => x.disliked)) + block("Что не нравится в питании", count(x => x.foodBad)) +
+      block("Что улучшить в первую очередь", count(x => x.priority)) + block("Что нравится", count(x => x.liked)) + block("Как давно в садике", count(x => x.age)) +
+      `<h2 style="font-size:17px;margin:6px 0 10px">Свободные ответы</h2>` +
+      (words.length ? table(["Дата", "Оценка", "Ответы", "Контакт"], words.map(x => `<tr><td>${esc(util.date(x.date))}</td><td>${x.rate ? "Садик " + x.rate + "/5" : ""}${x.foodRate ? "<br>Еда " + x.foodRate + "/5" : ""}</td><td style="white-space:pre-wrap">${cell("Что не устраивает", x.complaint)}${cell("Про питание", x.foodIdea)}${cell("Предложение", x.idea)}</td><td class="r">${esc(x.contact) || ""}</td></tr>`)) : '<div class="empty">Текстовых ответов пока нет.</div>');
   }
 
   const table = (head, rows) => `<table><thead><tr>${head.map((h, i) => `<th${i === head.length - 1 ? ' class="r"' : ""}>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
