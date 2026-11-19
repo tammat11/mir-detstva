@@ -390,7 +390,7 @@
     try { survey = (await MD.call("surveyData", { key: KEY })).items || []; $("nSurvey").textContent = survey.length; render(); }
     catch (e) { v.innerHTML = `<div class="empty"><b>Не получилось загрузить</b>${esc(e.message)}</div>`; }
   }
-  const NOTE_LABELS = [["ageNote", "О садике"], ["rateNote", "Оценка садика"], ["likedNote", "Что нравится"], ["dislikedNote", "Что изменить в садике"], ["foodRateNote", "Оценка питания"], ["foodNote", "Что изменить в питании"], ["priorityNote", "Что улучшить первым"], ["servicesNote", "Доп. услуги"]];
+  const NOTE_LABELS = [["ageNote", "О садике"], ["rateNote", "Оценка садика"], ["likedNote", "Что нравится"], ["dislikedNote", "Что изменить в садике"], ["foodRateNote", "Оценка питания"], ["foodNote", "Что изменить в питании"], ["priorityNote", "Что улучшить первым"], ["servicesNote", "Доп. услуги"], ["contentNote", "Контент в соцсетях"]];
   function renderSurvey(v, hit) {
     if (!survey) return loadSurvey(v);
     const link = location.href.replace(/admin\.html.*$/, "survey.html");
@@ -403,7 +403,7 @@
     const cell = (label, t) => t ? `<div style="margin-bottom:6px"><span class="sub" style="display:block;font-weight:700">${label}</span>${esc(t)}</div>` : "";
     v.innerHTML = head +
       `<div class="bulk"><span>Ответов: <b>${survey.length}</b> · Садик: <b>${avgOf("rate")}</b> · Питание: <b>${avgOf("foodRate")}</b></span></div>` +
-      block("Что хотят изменить в садике", count(x => x.disliked)) + block("Что хотят изменить в питании", count(x => x.foodBad)) + block("Какие доп. услуги нужны", count(x => x.services)) +
+      block("Что хотят изменить в садике", count(x => x.disliked)) + block("Что хотят изменить в питании", count(x => x.foodBad)) + block("Какие доп. услуги нужны", count(x => x.services)) + block("Какой контент в соцсетях хотят", count(x => x.content)) +
       block("Что улучшить в первую очередь", count(x => x.priority)) + block("Что нравится", count(x => x.liked)) + block("Как давно в садике", count(x => x.age)) +
       `<h2 style="font-size:17px;margin:6px 0 10px">Свободные ответы</h2>` +
       (words.length ? table(["Дата", "Оценка", "Ответы", "Контакт"], words.map(x => `<tr><td>${esc(util.date(x.date))}</td><td>${x.rate ? "Садик " + x.rate + "/5" : ""}${x.foodRate ? "<br>Еда " + x.foodRate + "/5" : ""}</td><td style="white-space:pre-wrap">${NOTE_LABELS.map(([k, l]) => cell(l, (x.notes || {})[k])).join("")}${cell("Ещё изменить", x.complaint)}${cell("Предложение", x.idea)}</td><td class="r">${esc(x.contact) || ""}</td></tr>`)) : '<div class="empty">Текстовых ответов пока нет.</div>');
